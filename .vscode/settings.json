@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/8f8b3e9e-0949-4bc7-b9b3-7a4673d55167/resourceGroups/cloud-shell-storage-westeurope/providers/Microsoft.Web/sites/carbon-cal",
+    "appService.deploySubpath": "."
+}

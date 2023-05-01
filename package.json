@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --passWithNoTests"
   },
   "keywords": [],
   "author": "",
@@ -21,5 +21,8 @@
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.2.4",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }
