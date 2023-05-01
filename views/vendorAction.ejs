@@ -233,6 +233,14 @@
             <label for="edit-screen-size" class="form-label">Screen Size</label>
             <input type="text" class="form-control" id="edit-screen-size" name="screen_size">
           </div>
+          <div class="mb-3">
+            <label for="edit-end-of-life" class="form-label">End of Life</label>
+            <input type="text" class="form-control" id="edit-end-of-life" name="end_of_life">
+          </div>
+          <div class="mb-3">
+            <label for="edit-product-use" class="form-label">Product Use</label>
+            <input type="text" class="form-control" id="edit-product-use" name="product_use">
+          </div>
           <input type="hidden" id="edit-id" name="id">
         </form>
       </div>
@@ -364,6 +372,9 @@ document.getElementById('vendor-form').addEventListener('submit', async (event) 
     $('#edit-ram').val(data.ram);
     $('#edit-storage').val(data.storage);
     $('#edit-screen-size').val(data.screen_size);
+    $('#edit-end-of-life').val(data.end_of_life);
+    $('#edit-product-use').val(data.product_use);
+
     $('#edit-modal').modal('show');
   });
 
@@ -374,6 +385,8 @@ document.getElementById('vendor-form').addEventListener('submit', async (event) 
     var ram = $('#edit-ram').val();
     var storage = $('#edit-storage').val();
     var screen_size = $('#edit-screen-size').val();
+    var end_of_life = $('#edit-end-of-life').val();
+    var product_use = $('#edit-product-use').val();
     
     $.ajax({
       url: '/vendor/update',
