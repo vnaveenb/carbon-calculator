@@ -1,0 +1,93 @@
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"  crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+ 
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-flash-2.0.1/b-html5-2.0.1/b-print-2.0.1/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.dataTables.min.css"/>
+ 
+ 
+    
+ 
+  <title>App</title>
+  <style>
+
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+    
+    margin-left: 20px !important;
+}
+
+
+
+    .dropdown {
+      margin-left: auto;
+    }
+
+    .dropdown button {
+      border-radius: 60%;
+      font-size: 1.2rem;
+      padding: 15px 10px;
+    }
+
+    .dropdown-menu {
+      right: 4px;
+      left: auto;
+    }
+
+    .dropdown-menu.show {
+    left: auto;
+    display: block;
+}
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Carbon Emissions Calculator</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <% if (locals.user && locals.user.role === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/welcome">Admin Welcome</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/action">Admin Action</a>
+            </li>
+          <% } else if (locals.user && locals.user.role === 'vendor') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/vendor/welcome">Vendor Welcome</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/vendor/action">Vendor Action</a>
+            </li>
+          <% } else if (locals.user && locals.user.role === 'user') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/welcome">User Welcome</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/user/actions">User Action</a>
+            </li>
+          <% } %>
+        </ul>
+        <% if (locals.user) { %>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-user"></i>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              <li><a class="dropdown-item" href="#">UserName: <%= user.username %></a></li>
+              <li><a class="dropdown-item" href="#">Email: <%= user.email %></a></li>
+              <li><a class="dropdown-item" href="#">Role: <%= user.role %></a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+            </ul>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+ 

@@ -1,0 +1,11 @@
+id,brand,location,end_of_life,product_use,transport,packaging,production,scope_2,scope_3,model,screen_size,processor,ram,storage
+1,Apple,China,0.30,3.20,0.80,0.60,13.90,21.10,67.10,Macbook Pro,15 inches,Intel Core i7,8GB,256GB SSD
+2,Dell,USA,0.40,2.80,0.50,0.40,16.10,22.50,57.30,XPS 13,13 inches,Intel Core i5,8GB,256GB SSD
+3,HP,Japan,0.50,3.40,0.60,0.70,19.20,23.40,52.80,Spectre x360,14 inches,Intel Core i7,16GB,512GB SSD
+4,Lenovo,Germany,0.40,2.70,0.50,0.50,17.90,21.30,56.80,Thinkpad X1 Carbon,14 inches,Intel Core i5,8GB,256GB SSD
+5,Asus,Taiwan,0.30,3.10,0.70,0.40,14.80,20.20,63.50,Zenbook UX425,14 inches,Intel Core i5,8GB,512GB SSD
+6,Acer,South Korea,0.50,3.50,0.70,0.60,19.80,24.30,51.60,Swift 5,14 inches,Intel Core i7,16GB,1TB SSD
+7,Microsoft,USA,0.40,2.90,0.60,0.50,18.30,22.10,55.20,Surface Laptop 4,13.5 inches,AMD Ryzen 5,8GB,256GB SSD
+8,Razer,USA,0.30,3.20,0.80,0.60,17.90,21.80,56.40,Blade 15,15.6 inches,Intel Core i7,16GB,512GB SSD
+9,Samsung,South Korea,0.50,3.60,0.70,0.60,20.10,23.90,49.60,Galaxy Book Pro,15.6 inches,Intel Core i7,16GB,512GB SSD
+10,Google,USA,0.40,2.80,0.60,0.40,15.70,22.40,56.10,Pixelbook Go,13.3 inches,Intel Core i5,8GB,128GB SSD

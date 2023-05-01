@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Action</title>
+    <style>
+      .success-message {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .datatable-container {
+  width: 100%;
+}
+.nowrap {
+  white-space: nowrap;
+}
+    </style>
+</head>
+<body>
+    <%- include('header') %>
+
+    <div class="container">
+      <h1>Welcome Vendor!</h1>
+  
+      <ul class="nav nav-tabs" id="myTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="upload-tab" data-bs-toggle="tab" href="#upload" role="tab" aria-controls="upload" aria-selected="true">Upload Data</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="view-tab" data-bs-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="false">View Data</a>
+        </li>
+      </ul>
+  
+      <div class="tab-content" id="myTabsContent">
+        <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+            Upload Data From Excel
+          </button>
+          <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="uploadModalLabel">Upload Emissions Data</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form id="xls-upload-form" enctype="multipart/form-data">
+                    <input type="file" name="xlsFile" accept=".xls,.xlsx" required>
+                    <button type="submit" class="btn btn-primary">Upload XLS</button>
+                  </form>
+          
+                  <a href="/vendor/test.xlsx" download="test.xlsx" class="btn btn-primary">
+                    Download Template
+                  </a>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          
+              
+              <div class="container">
+                  <div class="product-forms-container">
+                    <div class="card form-card">
+                      <div class="product-form-container">
+                        <div class="card-body">
+                          <form id="vendor-form" >
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="brand">Brand:</label>
+                                <input type="text" class="form-control" name="brand" placeholder="Brand">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="model">Model:</label>
+                                <input type="text" class="form-control" name="model" placeholder="Model">
+                              </div>
+                            </div>
+                
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="processor">Processor:</label>
+                                <input type="text" class="form-control" name="processor" placeholder="Processor">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="ram">RAM:</label>
+                                <input type="text" class="form-control" name="ram" placeholder="RAM">
+                              </div>
+                            </div>
+                
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="storage">Storage:</label>
+                                <input type="text" class="form-control" name="storage" placeholder="Storage">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="screen_size">Screen Size:</label>
+                                <input type="text" class="form-control" name="screen_size" placeholder="Screen Size">
+                              </div>
+                            </div>
+                
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="location">Location:</label>
+                                <input type="text" class="form-control" name="location" placeholder="Location/Country">
+                              </div>
+                              <div class="form-group col-md-6">
+                                  <label for="scope_3">Scope 3:</label>
+                                  <input type="number" step="0.01" class="form-control" name="scope_3" placeholder="Scope 3">
+                                </div>
+                
+                             
+                            </div>
+                
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="end_of_life">End of Life:</label>
+                                <input type="number" step="0.01" class="form-control" name="end_of_life" placeholder="End of Life">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="product_use">Product Use:</label>
+                                <input type="number" step="0.01" class="form-control" name="product_use" placeholder="Product Use">
+                              </div>
+                            </div>
+                
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="transport">Transport:</label>
+                                <input type="number" step="0.01" class="form-control" name="transport" placeholder="Transport">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="packaging">Packaging:</label>
+                                <input type="number" step="0.01" class="form-control" name="packaging" placeholder="Packaging">
+                              </div>
+                          </div>
+                          <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="production">Production:</label>
+                                <input type="number" step="0.01" class="form-control" name="production" placeholder="Production">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="scope_2">Scope 2:</label>
+                                <input type="number" step="0.01" class="form-control" name="scope_2" placeholder="Scope 2">
+                              </div>
+                            </div>
+                
+                            <div class="form-row">
+                              <!-- Add this inside the form, just above the submit button -->
+                              <div class="success-message" style="display: none;">
+                                <p>Submitted successfully.</p>
+                                <p><a href="/vendor/action">Click here to add new product details</a></p>
+                              </div>
+          
+                
+                              
+                            </div>
+                
+                            <div class="form-row">
+                              <div class="form-group col-md-12">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                              </div>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+          
+        </div>
+        <div class="tab-pane fade datatable-container" id="view" role="tabpanel" aria-labelledby="view-tab">
+          <table class="table table-striped mt-3" id="data-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th class="wide-column nowrap">Device Name</th>
+                <th>Location</th>
+                <th>End of Life</th>
+                <th>Product Use</th>
+                <th>Transport</th>
+                <th>Packaging</th>
+                <th>Production</th>
+                <th>Scope 2</th>
+                <th>Scope 3</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="edit-modal" tabindex="-1" aria-labelledby="edit-modal-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit-modal-label">Edit Row</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-form">
+          <div class="mb-3">
+            <label for="edit-brand" class="form-label">Brand</label>
+            <input type="text" class="form-control" id="edit-brand" name="brand">
+          </div>
+          <div class="mb-3">
+            <label for="edit-model" class="form-label">Model</label>
+            <input type="text" class="form-control" id="edit-model" name="model">
+          </div>
+          <div class="mb-3">
+            <label for="edit-ram" class="form-label">RAM</label>
+            <input type="text" class="form-control" id="edit-ram" name="ram">
+          </div>
+          <div class="mb-3">
+            <label for="edit-storage" class="form-label">Storage</label>
+            <input type="text" class="form-control" id="edit-storage" name="storage">
+          </div>
+          <div class="mb-3">
+            <label for="edit-screen-size" class="form-label">Screen Size</label>
+            <input type="text" class="form-control" id="edit-screen-size" name="screen_size">
+          </div>
+          <input type="hidden" id="edit-id" name="id">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="save-button">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      
+
+      
+      
+      
+      <%- include('footer') %>
+<script>
+
+
+
+document.getElementById('xls-upload-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch('/vendor/upload-xls', {
+      method: 'POST',
+      body: formData,
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      toastr.success(result.message);      
+    } else {
+      toastr.warning('Error: ' + result.message);  
+    }
+  } catch (error) {
+    console.error('Error during form submission:', error); 
+    toastr.warning('Error: during Submission'); 
+  }
+});
+
+
+
+document.getElementById('vendor-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/vendor/submit-emissions-data', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                  toastr.success('Emissions data submitted successfully');
+                } else {
+                    throw new Error('Failed to submit emissions data');
+                    toastr.warning('Error submitting emissions data');
+                }
+            } catch (err) {
+                console.error(err);
+                toastr.warning('Error submitting emissions data');
+            }
+        });
+
+
+
+
+        $(document).ready(function () {
+  var table = $('#data-table').DataTable({
+    ajax: {
+      url: '/vendor/fetch-data',
+      dataSrc: ''
+    },
+    columns: [
+      { data: 'vendor_id' },
+      {
+        render: function(data, type, row, meta) {
+          return row.brand + ' ' + row.model + ' '+row.processor+'' + row.ram + ' ' + row.storage + ' ' + row.screen_size;
+        },
+        className: 'nowrap'
+      },
+      { data: 'location' },
+      { data: 'end_of_life' },
+      { data: 'product_use' },
+      { data: 'transport' },
+      { data: 'packaging' },
+      { data: 'production' },
+      { data: 'scope_2' },
+      { data: 'scope_3' }
+    ],      
+        columnDefs: [
+        { "width": "150px", "targets": [0,1] },       
+        { "width": "40px", "targets": [4] }
+      ],
+    dom: 'Bfrtip',
+    buttons: [
+      {
+        extend: 'excelHtml5',
+        text: 'Export to Excel',
+        exportOptions: {
+          columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+        }
+      },
+      {
+        text: 'Download',
+        action: function (e, dt, node, config) {
+          window.location.href = '/vendor/download';
+        }
+      }
+    ]
+  });
+
+  $('#data-table tbody').on('click', 'tr', function () {
+    var data = table.row(this).data();
+    $('#edit-id').val(data.id);
+    $('#edit-brand').val(data.brand);
+    $('#edit-model').val(data.model);
+    $('#edit-ram').val(data.ram);
+    $('#edit-storage').val(data.storage);
+    $('#edit-screen-size').val(data.screen_size);
+    $('#edit-modal').modal('show');
+  });
+
+  $('#save-button').click(function() {
+    var id = $('#edit-id').val();
+    var brand = $('#edit-brand').val();
+    var model = $('#edit-model').val();
+    var ram = $('#edit-ram').val();
+    var storage = $('#edit-storage').val();
+    var screen_size = $('#edit-screen-size').val();
+    
+    $.ajax({
+      url: '/vendor/update',
+      type: 'POST',
+      data: {
+        id: id,
+        brand: brand,
+        model: model,
+        ram: ram,
+        storage: storage,
+        screen_size: screen_size
+      },
+      success: function(response) {
+        $('#edit-modal').modal('hide');
+        table.ajax.reload();
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(textStatus, errorThrown);
+      }
+    });
+  });
+});
+
+toastr.options = {
+  closeButton: true,
+  progressBar: true,
+  positionClass: "toast-top-right",
+  showDuration: "300",
+  hideDuration: "1000",
+  timeOut: "5000",
+  extendedTimeOut: "1000",
+  showEasing: "swing",
+  hideEasing: "linear",
+  showMethod: "fadeIn",
+  hideMethod: "fadeOut",
+};
+
+
+
+
+
+</script>    
+        
+  
+
+    
+      
+      
+ 

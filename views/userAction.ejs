@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+
+
+  
+
+  <script src="/chartjs-mini.js"></script>
+  <title>user Action</title>
+  <style>
+.chart-container {
+  position: relative;
+  width: 50vw;
+  height: 50vh;
+}
+
+
+
+.product-forms-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+
+
+  .product-form-container {
+  box-sizing: border-box;
+  flex-basis: calc(50% - 20px);
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 16px;
+}
+
+.card-body {
+    
+    padding: initial!important;
+}
+
+
+
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 16px;
+    width: 30vw !important;
+    height: 63vh !important;
+  }
+
+ 
+
+ 
+
+  .quantity,
+  .years {
+    grid-column: span 2;
+  }
+
+
+  .chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart-container,
+.bar-chart-container {
+  flex: 1;
+  margin: 10px;
+}
+
+.chart-container canvas,
+.bar-chart-container canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.bar-chart-container {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+  }
+
+  .form-card {
+  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+
+</style>
+
+</head>
+<body>
+  <%- include('header') %>
+
+
+  <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
+
+  
+  
+  <div class="container">
+    <div class="product-forms-container">
+      <div class="card form-card">
+        <div class="product-form-container">
+          <div class="card-body">
+            <form id="carbon-emission-form">
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="brand">Brand:</label>
+                  <select id="brand" class="form-control brand" name="brand">
+                    <option value="">Please select a brand</option>
+                  </select>
+                </div>
+  
+                <div class="form-group col-md-6">
+                  <label for="model">Model:</label>
+                  <select id="model" class="form-control model" name="model">
+                    <option value="">Please select a model</option>
+                  </select>
+                </div>
+              </div>
+  
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="processor">Processor:</label>
+                  <select id="processor" class="form-control processor" name="processor">
+                    <option value="">Please select a processor</option>
+                  </select>
+                </div>
+  
+                <div class="form-group col-md-6">
+                  <label for="ram">RAM:</label>
+                  <select id="ram" class="form-control ram" name="ram">
+                    <option value="">Please select a RAM size</option>
+                  </select>
+                </div>
+              </div>
+  
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="storage">Storage:</label>
+                  <select id="storage" class="form-control storage" name="storage">
+                    <option value="">Please select a storage size</option>
+                  </select>
+                </div>
+  
+                <div class="form-group col-md-6">
+                  <label for="screen_size">Screen Size:</label>
+                  <select id="screen_size" class="form-control screen_size" name="screen_size">
+                    <option value="">Please select a screen size</option>
+                  </select>
+                </div>
+              </div>
+  
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="location">Location:</label>
+                  <select id="location" class="form-control location" name="location">
+                    <option value="">Please select a location</option>
+                  </select>
+                </div>
+  
+                <div class="form-group col-md-6">
+                  <label for="quantity">Quantity:</label>
+                  <input type="number" class="form-control quantity" min="1" name="quantity" placeholder="Quantity">
+                </div>
+              </div>
+  
+              <div class="">
+                <div class="form-group ">
+                  <label for="years">Number of Years:</label>
+                  <input type="number" min="1" max="5" class="form-control years" name="years" placeholder="Number of Years">
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+
+<button  data-toggle="tooltip" data-placement="top" title="Submits All forms Data to generate results" id="submit-all" class="btn btn-primary"> Submit All  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+  <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z"/>
+</svg></button>
+
+  <button  data-toggle="tooltip" data-placement="top" title="Adds new form for adding another device" id="add-product" class="btn btn-secondary">Add Product  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+  </svg> </button>
+<button  data-toggle="tooltip" data-placement="top" title="Delete the last added form" id="remove-product" class="btn btn-danger"> Remove Product  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+</svg></button>
+
+
+<button  data-toggle="tooltip" data-placement="top" title="Download the data into a PDF File" id="download-pdf" class="btn btn-primary download">Download PDF  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+</svg> </button>
+
+<div id="content" class="content" style="display: none;">
+<div class="container">
+  <h2>Carbon Emissions Data</h2>
+  <div class="emissions-table-container">
+    <table class="table table-bordered detailed-emissions-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>End of Life</th>
+          <th>Product Use</th>
+          <th>Transport</th>
+          <th>Packaging</th>
+          <th>Production</th>
+          <th>Scope 2</th>
+          <th>Scope 3</th>
+          <th>Total Emissions</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  
+</div>
+  
+
+
+  
+<div class="chart-wrapper">
+  <div class="chart-container">
+    <canvas id="pieChart" style="height: 400px;"></canvas>
+  </div>
+  
+  <div class="bar-chart-container">
+    <canvas id="barChart"></canvas>
+  </div>
+</div>
+</div>
+
+  
+
+      
+
+  
+  <script>
+
+
+
+function createNewProductFormContainer() {
+  const formContainer = document.createElement('div');
+  formContainer.className = 'card form-card';
+  formContainer.innerHTML = `
+  <div class="product-form-container">
+        
+    <div class="card-body">
+            <form id="carbon-emission-form">
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="brand">Brand:</label>
+                  <select id="brand" class="form-control brand" name="brand">
+                    <option value="">Please select a brand</option>
+                  </select>
+                </div>
+  
+                <div class="form-group col-md-6">
+                  <label for="model">Model:</label>
+                  <select id="model" class="form-control model" name="model">
+                    <option value="">Please select a model</option>
+                  </select>
+                </div>
+              </div>
+  
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="processor">Processor:</label>
+                  <select id="processor" class="form-control processor" name="processor">
+                    <option value="">Please select a processor</option>
+                  </select>
+                </div>
+  
+                <div class="form-group col-md-6">
+                  <label for="ram">RAM:</label>
+                  <select id="ram" class="form-control ram" name="ram">
+                    <option value="">Please select a RAM size</option>
+                  </select>
+                </div>
+              </div>
+  
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="storage">Storage:</label>
+                  <select id="storage" class="form-control storage" name="storage">
+                    <option value="">Please select a storage size</option>
+                  </select>
+                </div>
+  
+                <div class="form-group col-md-6">
+                  <label for="screen_size">Screen Size:</label>
+                  <select id="screen_size" class="form-control screen_size" name="screen_size">
+                    <option value="">Please select a screen size</option>
+                  </select>
+                </div>
+              </div>
+  
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="location">Location:</label>
+                  <select id="location" class="form-control location" name="location">
+                    <option value="">Please select a location</option>
+                  </select>
+                </div>
+  
+                <div class="form-group col-md-6">
+                  <label for="quantity">Quantity:</label>
+                  <input type="number" class="form-control quantity" name="quantity" placeholder="Quantity">
+                </div>
+              </div>
+  
+              <div class="">
+                <div class="form-group ">
+                  <label for="years">Number of Years:</label>
+                  <input type="number" class="form-control years" name="years" placeholder="Number of Years">
+                </div>
+              </div>
+            </form>
+          </div>
+  
+</div>
+  `;
+  initializeForm(formContainer);
+  return formContainer;
+}
+
+// Replace the click event listener for the add-product button with the following:
+document.querySelector('#add-product').addEventListener('click', () => {
+  const productFormsContainer = document.querySelector('.product-forms-container');
+  const newProductFormContainer = createNewProductFormContainer();
+  productFormsContainer.appendChild(newProductFormContainer);
+});
+
+
+
+
+
+function initializeForm(form) {
+  // Attach all event listeners for the given form.
+  // Replace all occurrences of `document.querySelector` with `form.querySelector`
+
+  async function fetchAndPopulateDropdown(route, prevSelections, dropdownSelector) {
+    const queryString = prevSelections.map(s => `${s.name}=${s.value}`).join('&');
+    console.log("Fetching data from:", route);
+    const response = await fetch(`${route}?${queryString}`);
+    const data = await response.json();
+    console.log("Fetched data:", data);
+
+    const dropdown = form.querySelector(dropdownSelector);
+    dropdown.innerHTML = '<option value="">Please select an option</option>';
+    data.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item;
+      option.textContent = item;
+      dropdown.appendChild(option);
+    });
+  }
+
+  form.querySelector('.brand').addEventListener('change', async (e) => {
+  fetchAndPopulateDropdown('/user/unique-models', [{ name: 'brand', value: e.target.value }], '.model');
+});
+
+form.querySelector('.model').addEventListener('change', async (e) => {
+  fetchAndPopulateDropdown('/user/unique-processors', [{ name: 'brand', value: form.querySelector('.brand').value }, { name: 'model', value: e.target.value }], '.processor');
+});
+
+form.querySelector('.processor').addEventListener('change', async (e) => {
+  fetchAndPopulateDropdown('/user/unique-ram', [{ name: 'brand', value: form.querySelector('.brand').value }, { name: 'model', value: form.querySelector('.model').value }, { name: 'processor', value: e.target.value }], '.ram');
+});
+
+form.querySelector('.ram').addEventListener('change', async (e) => {
+  fetchAndPopulateDropdown('/user/unique-storage', [{ name: 'brand', value: form.querySelector('.brand').value }, { name: 'model', value: form.querySelector('.model').value }, { name: 'processor', value: form.querySelector('.processor').value }, { name: 'ram', value: e.target.value }], '.storage');
+});
+
+form.querySelector('.storage').addEventListener('change', async (e) => {
+  fetchAndPopulateDropdown('/user/unique-screen-size', [{ name: 'brand', value: form.querySelector('.brand').value }, { name: 'model', value: form.querySelector('.model').value }, { name: 'processor', value: form.querySelector('.processor').value }, { name: 'ram', value: form.querySelector('.ram').value }, { name: 'storage', value: e.target.value }], '.screen_size');
+});
+
+form.querySelector('.screen_size').addEventListener('change', async (e) => {
+  fetchAndPopulateDropdown('/user/unique-location', [{ name: 'brand', value: form.querySelector('.brand').value }, { name: 'model', value: form.querySelector('.model').value }, { name: 'processor', value: form.querySelector('.processor').value }, { name: 'ram', value: form.querySelector('.ram').value }, { name: 'storage', value: form.querySelector('.storage').value }, { name: 'screen_size', value: e.target.value }], '.location');
+});
+
+
+  let pieChart;
+  let barChart;
+
+
+
+  function updateTableAndCharts(chartDataArray) {
+  console.log("Received chart data:", chartDataArray);
+
+  const totalEmissions = {};
+  chartDataArray.forEach(chartData => {
+    Object.keys(chartData).forEach(key => {
+      if (!totalEmissions[key]) {
+        totalEmissions[key] = 0;
+      }
+      totalEmissions[key] += chartData[key];
+    });
+  });
+
+  console.log("Total emissions:", totalEmissions);
+
+  const categories = [
+    'end_of_life',
+    'product_use',
+    'transport',
+    'packaging',
+    'production',
+    'scope_2',
+    'scope_3',
+    'total', // Add the 'total' category
+  ];
+
+  // Calculate the total emissions for each product and add it to the chartDataArray
+  chartDataArray = chartDataArray.map(productData => {
+    const totalEmissionsForProduct = categories.reduce((total, category) => {
+      if (category === 'total') return total; // Skip the 'total' category
+      const value = productData[category.toLowerCase().replace(' ', '_')];
+      return total + value;
+    }, 0);
+    return { ...productData, total: totalEmissionsForProduct };
+  });
+
+  const detailedTableBody = document.querySelector('.detailed-emissions-table tbody');
+  detailedTableBody.innerHTML = '';
+  
+  let sumOfTotalEmissions = 0;
+
+  chartDataArray.forEach((productData, index) => {
+    const row = document.createElement('tr');
+
+    const productCell = document.createElement('td');
+    productCell.textContent = `Product ${index + 1}`;
+    row.appendChild(productCell);
+    
+    const totalEmissionsForProduct = productData.total;
+    sumOfTotalEmissions += totalEmissionsForProduct;
+    console.log("Product", index + 1, "total emissions:", totalEmissionsForProduct);
+    console.log("Current sum of total emissions:", sumOfTotalEmissions);
+
+
+    categories.forEach(category => {
+      const value = productData[category.toLowerCase().replace(' ', '_')];
+      const valueCell = document.createElement('td');
+      valueCell.textContent = value;
+      row.appendChild(valueCell);
+    });
+    console.log("Final sum of total emissions:", sumOfTotalEmissions);
+
+
+    detailedTableBody.appendChild(row);
+  });
+
+    // Update the pie chart
+
+// Custom Code
+const centerTextPlugin = {
+  id: "centerText",
+  beforeDraw: function (chart, args, options) {
+    if (options.center) {
+      var ctx = chart.ctx;
+      var centerConfig = options.center;
+      var fontStyle = centerConfig.fontStyle || "Arial";
+      var txt = centerConfig.text;
+      var color = centerConfig.color || "#000";
+      var sidePadding = centerConfig.sidePadding || 20;
+      var sidePaddingCalculated = (sidePadding / 100) * (chart.innerRadius * 2);
+      ctx.font = "10px " + fontStyle;
+
+      var stringWidth = ctx.measureText(txt).width;
+      var elementWidth = chart.innerRadius * 2 - sidePaddingCalculated;
+      var widthRatio = elementWidth / stringWidth;
+      var newFontSize = Math.floor(30 * widthRatio);
+      var elementHeight = chart.innerRadius * 2;
+      var fontSizeToUse = Math.min(newFontSize, elementHeight);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+      var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+      ctx.font = fontSizeToUse + "px " + fontStyle;
+      ctx.fillStyle = color;
+
+      // Calculate the total emissions value for the center text
+      const totalEmissionsValue = chart.data.datasets[0].data.reduce(
+        (acc, curr) => acc + curr,
+        0
+      );
+      // Update the center text
+      const centerText = "Total Emissions: " + totalEmissionsValue;
+
+      ctx.fillText(centerText, centerX, centerY);
+    }
+  },
+};
+
+
+
+
+const ctx = document.getElementById("pieChart").getContext("2d");
+
+if (pieChart) {
+  pieChart.destroy();
+}
+
+const emissionsData = categories.map((category) =>
+  totalEmissions[category.toLowerCase().replace(" ", "_")]
+);
+const totalEmissionsValue = emissionsData.reduce(
+  (acc, curr) => acc + curr,
+  0
+);
+
+pieChart = new Chart(ctx, {
+  type: "doughnut",
+  data: {
+    labels: categories,
+    datasets: [
+      {
+        data: emissionsData,
+        backgroundColor: [
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#4BC0C0",
+          "#9966FF",
+          "#FF9F40",
+          "#FF6384",
+        ],
+      },
+    ],
+  },
+  options: {
+    plugins: {
+      centerText: {
+        center: {
+          text: "Total Emissions: " + sumOfTotalEmissions,
+          color: "#000",
+          fontStyle: "Arial",
+          sidePadding: 20,
+        },
+      },
+    },
+  },
+  plugins: [centerTextPlugin],
+});
+
+
+    // Update the bar chart
+    const barCtx = document.getElementById('barChart').getContext('2d');
+
+    if (barChart) {
+        barChart.destroy();
+    }
+
+    barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: categories,
+            datasets: [{
+                data: categories.map(category => totalEmissions[category.toLowerCase().replace(' ', '_')]),
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#4BC0C0',
+                    '#9966FF',
+                    '#FF9F40',
+                    '#FF6384',
+                ],
+            }],
+        },
+    });
+}
+
+
+
+function checkFormFields(form) {
+  const requiredFields = ['brand', 'model', 'processor', 'ram', 'storage', 'screen_size', 'location', 'quantity', 'years'];
+  for (const field of requiredFields) {
+    const input = form[field];
+    if (input.value === '') {
+      return false;
+    }
+  }
+  return true;
+}
+function showWarningMessage(message) {
+  $('#error-message').text(message).show();
+  console.log("insied warning message");
+}
+
+async function fetchDataAndRenderContent() {
+  const form = document.querySelector('#carbon-emission-form');
+
+  if (!checkFormFields(form)) {
+    document.querySelector('#error-message').style.display = 'block';
+    showWarningMessage('Please fill out all form fields.');
+    console.log("inside check form");
+    return;
+  }
+  console.log("outside check form");
+  document.querySelector('#error-message').style.display = 'none';
+  document.querySelector('.content').style.display = 'block';
+
+  const productFormContainers = document.querySelectorAll('.product-form-container');
+
+  const allChartData = [];
+
+  for (const formContainer of productFormContainers) {
+    const formData = new FormData(formContainer.querySelector('form'));
+
+    const response = await fetch('/user/chart-data?' + new URLSearchParams(formData));
+    const chartData = await response.json();
+    allChartData.push(chartData);
+  }
+
+  console.log('Fetched data:', allChartData);
+  console.log('Individual chart data:', allChartData.map(data => JSON.stringify(data)));
+
+  updateTableAndCharts(allChartData);
+}
+
+document.querySelector('#submit-all').addEventListener('click', (event) => {
+  event.preventDefault();
+  fetchDataAndRenderContent();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const brandDropdown = form.querySelector('.brand');
+  brandDropdown.dispatchEvent(new Event('change'));
+  fetchAndPopulateDropdown('/user/unique-brands', [], '.brand');
+}
+
+// Initialize the main form.
+initializeForm(document.querySelector('.product-form-container'));
+
+
+
+document.querySelector('#remove-product').addEventListener('click', () => {
+  const productFormContainers = document.querySelectorAll('.card');
+  if (productFormContainers.length > 1) {
+    productFormContainers[productFormContainers.length - 1].remove();
+  }
+});
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const response = await fetch('/user/unique-brands');
+    const brands = await response.json();
+
+    const form = document.querySelector('#carbon-emission-form');
+    
+    const brandDropdown = form.querySelector('.brand');
+    brands.forEach(brand => {
+      const option = document.createElement('option');
+      option.value = brand;
+      option.textContent = brand;
+      brandDropdown.appendChild(option);
+    });
+  });
+
+
+
+
+  $('.download').click(function() {
+  // const doc = new jsPDF();
+  window.jsPDF = window.jspdf.jsPDF;
+
+  doc.fromHTML(
+    $('#content').html(),
+    15,
+    15,
+    {
+      'width': 170,
+      'elementHandlers': {
+        '#content': function(element, renderer) {
+          return true;
+        }
+      }
+    }
+  );
+
+  doc.save('emissions_report.pdf');
+});
+
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
+
+
+
+</script>
+
+
+
+  
+  <%- include('footer') %>
+</body>
+</html>
+
+
+      
