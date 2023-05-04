@@ -10,18 +10,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
-
 app.set('view engine', 'ejs');
 
 app.use(
-    session({
-        secret: 'your-secret-key',
-        resave: false,
-        saveUninitialized: true,
-    })
+  session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+  })
 );
 
-const authRoutes = require('./routes/auth')(db);
+const authRoutes = require('./routes/auth')(db, session);
 const adminRoutes = require('./routes/admin')(db);
 const vendorRoutes = require('./routes/vendor')(db);
 const userRoutes = require('./routes/user')(db);
@@ -32,14 +31,14 @@ app.use('/vendor', vendorRoutes);
 app.use('/user', userRoutes);
 
 app.get('/', (req, res) => {
-    res.redirect('/auth/login');
+  res.redirect('/auth/login');
 });
 
 app.get('/register', (req, res) => {
-    res.render('register');
+  res.render('/auth/register');
 });
 
 const PORT = process.env.PORT || 3200;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
