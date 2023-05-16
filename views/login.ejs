@@ -7,24 +7,60 @@
 </head>
 <body>
   <%- include('header') %>
+  <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11"></div>
+
   <h1>Login</h1>
-  <form action="/auth/login" method="POST">
-    <div>
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username" required>
-    </div>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required>
-    </div>
-    <button class="btn btn-primary" type="submit">Login</button>
-  </form>
+  <div id="login-container">
+    <form action="/auth/login" method="POST">
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button class="btn btn-primary" type="submit">Login</button>
+    </form>
+  </div>
+  
 
   <!-- <a href="/auth/google">Sign in with Google</a>
 <a href="/auth/facebook">Sign in with Facebook</a> -->
 
 
   <p>Don't have an account? <a href="/register">Register here</a></p>
+  <script>
+    $(document).ready(function() {
+      $("#login-container form").submit(function(event) {
+        event.preventDefault();
+    
+        const formData = $(this).serialize();
+    
+        $.ajax({
+          url: '/auth/login',
+          type: 'POST',
+          data: formData,
+          success: function(response) {
+            window.location.href = response.redirect; // Redirect to the appropriate page based on the user's role
+          },
+          error: function(jqXHR) {
+            if (jqXHR.status === 401) {
+              const errorMessage = JSON.parse(jqXHR.responseText).error;
+              toastr.error(errorMessage);
+            } else {
+              toastr.error('Internal server error');
+            }
+          }
+        });
+      });
+    });
+    </script>
+    
+
+
+
+    
   <%- include('footer') %>
 </body>
 </html>

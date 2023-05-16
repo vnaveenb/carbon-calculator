@@ -19,8 +19,3 @@ const pool = mysql.createPool({
 module.exports = pool.promise();
 
 
-// mysql -u devloper  -h my-sql-server-project.mysql.database.azure.com -P 3306 
-
-// SYSTEM mysql -u devloper -h my-sql-server-project.mysql.database.azure.com -P 3306 -p REDACTED_DB_PASSWORD
-
-// Test-NetConnection -ComputerName my-sql-server-project.mysql.database.azure.com -Port 3306

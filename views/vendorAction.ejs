@@ -98,7 +98,7 @@
                             <div class="form-row">
                               <div class="form-group col-md-6">
                                 <label for="storage">Storage:</label>
-                                <input type="text" class="form-control" name="storage" placeholder="Storage">
+                                <input type="number" class="form-control" name="storage" placeholder="Storage">
                               </div>
                 
                               <div class="form-group col-md-6">
@@ -109,49 +109,72 @@
                 
                             <div class="form-row">
                               <div class="form-group col-md-6">
-                                <label for="location">Location:</label>
-                                <input type="text" class="form-control" name="location" placeholder="Location/Country">
+                                <label for="date">Date:</label>
+                                <input type="date" class="form-control" name="date" placeholder="Manufactured Date">
                               </div>
                               <div class="form-group col-md-6">
-                                  <label for="scope_3">Scope 3:</label>
-                                  <input type="number" step="0.01" class="form-control" name="scope_3" placeholder="Scope 3">
+                                  <label for="chassis">chassis</label>
+                                  <input type="number" step="0.01" class="form-control" name="chassis" placeholder="Chassis">
                                 </div>
                 
                              
                             </div>
                 
                             <div class="form-row">
-                              <div class="form-group col-md-6">
-                                <label for="end_of_life">End of Life:</label>
-                                <input type="number" step="0.01" class="form-control" name="end_of_life" placeholder="End of Life">
-                              </div>
-                
-                              <div class="form-group col-md-6">
-                                <label for="product_use">Product Use:</label>
-                                <input type="number" step="0.01" class="form-control" name="product_use" placeholder="Product Use">
-                              </div>
-                            </div>
-                
-                            <div class="form-row">
-                              <div class="form-group col-md-6">
-                                <label for="transport">Transport:</label>
-                                <input type="number" step="0.01" class="form-control" name="transport" placeholder="Transport">
+                              <div class="form-group col-md-6" for="transportation">Transportation:</label>
+                                <input type="number" step="0.01" class="form-control" name="transportation" placeholder="Transportation">
                               </div>
                 
                               <div class="form-group col-md-6">
                                 <label for="packaging">Packaging:</label>
                                 <input type="number" step="0.01" class="form-control" name="packaging" placeholder="Packaging">
                               </div>
-                          </div>
-                          <div class="form-row">
+                            </div>
+                
+                            <div class="form-row">
                               <div class="form-group col-md-6">
-                                <label for="production">Production:</label>
-                                <input type="number" step="0.01" class="form-control" name="production" placeholder="Production">
+                                <label for="display">Display:</label>
+                                <input type="number" step="0.01" class="form-control" name="display" placeholder="Display">
                               </div>
                 
                               <div class="form-group col-md-6">
-                                <label for="scope_2">Scope 2:</label>
-                                <input type="number" step="0.01" class="form-control" name="scope_2" placeholder="Scope 2">
+                                <label for="packaging">SOC:</label>
+                                <input type="number" step="0.01" class="form-control" name="soc" placeholder="soc">
+                              </div>
+                          </div>
+                          <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="battery">Battery:</label>
+                                <input type="number" step="0.01" class="form-control" name="battery" placeholder="Battery">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="power_supply_unit">Power Supply Unit:</label>
+                                <input type="number" step="0.01" class="form-control" name="power_supply_unit" placeholder="Power Supply Unit">
+                              </div>
+                            </div>
+
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="optical_drive">Optical Drive:</label>
+                                <input type="number" step="0.01" class="form-control" name="optical_drive" placeholder="Optical Drive">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="storage_drive">Storage Drive:</label>
+                                <input type="number" step="0.01" class="form-control" name="storage_drive" placeholder="Storage Drive">
+                              </div>
+                            </div>
+
+                            <div class="form-row">
+                              <div class="form-group col-md-6">
+                                <label for="end_of_life">End Of Life:</label>
+                                <input type="number" step="0.01" class="form-control" name="end_of_life" placeholder="end of life">
+                              </div>
+                
+                              <div class="form-group col-md-6">
+                                <label for="device_usage">Device Usage:</label>
+                                <input type="number" step="0.01" class="form-control" name="device_usage" placeholder="Device Usage">
                               </div>
                             </div>
                 
@@ -183,83 +206,131 @@
           <table class="table table-striped mt-3" id="data-table">
             <thead>
               <tr>
-                <th>User ID</th>
-                <th class="wide-column nowrap">Device Name</th>
-                <th>Location</th>
-                <th>End of Life</th>
-                <th>Product Use</th>
-                <th>Transport</th>
+                <th>Vendor ID</th>
+                <th class="wide-column nowrap">Device Details</th>
+                <th>Date</th>
+                <th>Total CO2</th>
+                <th>Transportation</th>
                 <th>Packaging</th>
-                <th>Production</th>
-                <th>Scope 2</th>
-                <th>Scope 3</th>
+                <th>Display</th>
+                <th>SoC</th>
+                <th>Battery</th>
+                <th>Power Supply Unit</th>
+                <th>Optical Drive</th>
+                <th>Storage Drive</th>
+                <th>Chassis</th>
+                <th>End of Life</th>
+                <th>Device Usage</th>
               </tr>
             </thead>
             <tbody>
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
-
-
-<!-- Modal -->
-<div class="modal fade" id="edit-modal" tabindex="-1" aria-labelledby="edit-modal-label" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="edit-modal-label">Edit Row</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="edit-form">
-          <div class="mb-3">
-            <label for="edit-brand" class="form-label">Brand Name</label>
-            <input type="text" class="form-control" id="edit-brand" name="brand">
-          </div>
-          <div class="mb-3">
-            <label for="edit-model" class="form-label">Model</label>
-            <input type="text" class="form-control" id="edit-model" name="model">
-          </div>
-          <div class="mb-3">
-            <label for="edit-ram" class="form-label">RAM</label>
-            <input type="text" class="form-control" id="edit-ram" name="ram">
-          </div>
-          <div class="mb-3">
-            <label for="edit-storage" class="form-label">Storage</label>
-            <input type="text" class="form-control" id="edit-storage" name="storage">
-          </div>
-          <div class="mb-3">
-            <label for="edit-screen-size" class="form-label">Screen Size</label>
-            <input type="text" class="form-control" id="edit-screen-size" name="screen_size">
-          </div>
-          <div class="mb-3">
-            <label for="edit-end-of-life" class="form-label">End of Life</label>
-            <input type="text" class="form-control" id="edit-end-of-life" name="end_of_life">
-          </div>
-          <div class="mb-3">
-            <label for="edit-product-use" class="form-label">Product Use</label>
-            <input type="text" class="form-control" id="edit-product-use" name="product_use">
-          </div>
-          <input type="hidden" id="edit-id" name="id">
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" id="save-button">Save Changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
+        
+        <!-- Modal -->
+        <div class="modal fade" id="edit-modal" tabindex="-1" aria-labelledby="edit-modal-label" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="edit-modal-label">Edit Row</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <form id="edit-form">
+                  <input type="hidden" id="edit-id" name="id">
+                  
+                  <div class="mb-3">
+                    <label for="edit-brand" class="form-label">Brand</label>
+                    <input type="text" class="form-control" id="edit-brand" name="brand" disabled>
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-model" class="form-label">Model</label>
+                    <input type="text" class="form-control" id="edit-model" name="model" disabled>
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-processor" class="form-label">Processor</label>
+                    <input type="text" class="form-control" id="edit-processor" name="processor" disabled>
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-ram" class="form-label">RAM</label>
+                    <input type="text" class="form-control" id="edit-ram" name="ram" disabled>
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-storage" class="form-label">Storage</label>
+                    <input type="number" class="form-control" id="edit-storage" name="storage" disabled>
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-screen-size" class="form-label">Screen Size</label>
+                    <input type="text" class="form-control" id="edit-screen-size" name="screen_size" disabled>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label for="edit-total-co2" class="form-label">Total CO2</label>
+                    <input type="number" class="form-control" id="edit-total-co2" name="total_co2" step="0.01" disabled>
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-transportation" class="form-label">Transportation</label>
+                    <input type="number" class="form-control" id="edit-transportation" name="transportation" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-packaging" class="form-label">Packaging</label>
+                    <input type="number" class="form-control" id="edit-packaging" name="packaging" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-display" class="form-label">Display</label>
+                    <input type="number" class="form-control" id="edit-display" name="display" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                    <label for="edit-soc" class="form-label">SoC</label>
+                    <input type="number" class="form-control" id="edit-soc" name="soc" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                  <label for="edit-battery" class="form-label">Battery</label>
+                  <input type="number" class="form-control" id="edit-battery" name="battery" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                  <label for="edit-power-supply-unit" class="form-label">Power Supply Unit</label>
+                  <input type="number" class="form-control" id="edit-power-supply-unit" name="power_supply_unit" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                  <label for="edit-optical-drive" class="form-label">Optical Drive</label>
+                  <input type="number" class="form-control" id="edit-optical-drive" name="optical_drive" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                  <label for="edit-storage-drive" class="form-label">Storage Drive</label>
+                  <input type="number" class="form-control" id="edit-storage-drive" name="storage_drive" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                  <label for="edit-chassis" class="form-label">Chassis</label>
+                  <input type="number" class="form-control" id="edit-chassis" name="chassis" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                  <label for="edit-end-of-life" class="form-label">End of Life</label>
+                  <input type="number" class="form-control" id="edit-end-of-life" name="end_of_life" step="0.01">
+                  </div>
+                  <div class="mb-3">
+                  <label for="edit-device-usage" class="form-label">Device Usage</label>
+                  <input type="number" class="form-control" id="edit-device-usage" name="device_usage" step="0.01">
+                  </div>
+                  
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-button">Save Changes</button>
+              </div>
+            </div>
+                    
+        
+        
 
       
 
       
       
       
-      <%- include('footer') %>
+      
 <script>
 
 
@@ -290,36 +361,41 @@ document.getElementById('xls-upload-form').addEventListener('submit', async (eve
 
 
 document.getElementById('vendor-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
+    event.preventDefault();
 
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
 
-            try {
-                const response = await fetch('/vendor/submit-emissions-data', {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                  toastr.success('Emissions data submitted successfully');
-                } else {
-                    throw new Error('Failed to submit emissions data');
-                    toastr.warning('Error submitting emissions data');
-                }
-            } catch (err) {
-                console.error(err);
-                toastr.warning('Error submitting emissions data');
+    try {
+        const response = await fetch('/vendor/submit-emissions-data', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
             }
         });
 
+        // Parse the JSON response from the server
+        const responseData = await response.json();
+
+        if (response.ok) {
+            // Use the message from the server in the toastr
+            toastr.success(responseData.message);
+        } else {
+            // Use the message from the server in the toastr
+            toastr.warning(responseData.message);
+        }
+    } catch (err) {
+        console.error(err);
+        toastr.warning('Error submitting emissions data');
+    }
+});
 
 
 
-        $(document).ready(function () {
+
+
+$(document).ready(function () {
   var table = $('#data-table').DataTable({
     ajax: {
       url: '/vendor/fetch-data',
@@ -329,30 +405,35 @@ document.getElementById('vendor-form').addEventListener('submit', async (event) 
       { data: 'vendor_id' },
       {
         render: function(data, type, row, meta) {
-          return row.brand + ' ' + row.model + ' '+row.processor+'' + row.ram + ' ' + row.storage + ' ' + row.screen_size;
+          return row.brand + ' ' + row.model + ' ' + row.processor + ' ' + row.ram + ' ' + row.storage + ' ' + row.screen_size;
         },
         className: 'nowrap'
       },
-      { data: 'location' },
-      { data: 'end_of_life' },
-      { data: 'product_use' },
-      { data: 'transport' },
+      { data: 'date' },
+      { data: 'total_co2' },
+      { data: 'transportation' },
       { data: 'packaging' },
-      { data: 'production' },
-      { data: 'scope_2' },
-      { data: 'scope_3' }
+      { data: 'display' },
+      { data: 'soc' },
+      { data: 'battery' },
+      { data: 'power_supply_unit' },
+      { data: 'optical_drive' },
+      { data: 'storage_drive' },
+      { data: 'chassis' },
+      { data: 'end_of_life' },
+      { data: 'device_usage' }
     ],      
-        columnDefs: [
-        { "width": "150px", "targets": [0,1] },       
-        { "width": "40px", "targets": [4] }
-      ],
+    columnDefs: [
+      { "width": "150px", "targets": [0,1] },
+      { "width": "40px", "targets": [2,3,4,5,6,7,8,9,10,11,12,13] }
+    ],
     dom: 'Bfrtip',
     buttons: [
       {
         extend: 'excelHtml5',
         text: 'Export to Excel',
         exportOptions: {
-          columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+          columns: ':visible'
         }
       },
       {
@@ -366,49 +447,92 @@ document.getElementById('vendor-form').addEventListener('submit', async (event) 
 
   $('#data-table tbody').on('click', 'tr', function () {
     var data = table.row(this).data();
-    $('#edit-id').val(data.id);
-    $('#edit-brand').val(data.brand);
-    $('#edit-model').val(data.model);
-    $('#edit-ram').val(data.ram);
-    $('#edit-storage').val(data.storage);
-    $('#edit-screen-size').val(data.screen_size);
-    $('#edit-end-of-life').val(data.end_of_life);
-    $('#edit-product-use').val(data.product_use);
+    $('#edit-id').val(data.vendor_id);
+  $('#edit-brand').val(data.brand);
+  $('#edit-model').val(data.model);
+  $('#edit-processor').val(data.processor);
+  $('#edit-ram').val(data.ram);
+  $('#edit-storage').val(data.storage);
+  $('#edit-screen-size').val(data.screen_size);
+  $('#edit-end-of-life').val(data.end_of_life);
+  $('#edit-device-usage').val(data.device_usage);
+  $('#edit-total-co2').val(data.total_co2);
+  $('#edit-transportation').val(data.transportation);
+  $('#edit-packaging').val(data.packaging);
+  $('#edit-display').val(data.display);
+  $('#edit-soc').val(data.soc);
+  $('#edit-battery').val(data.battery);
+  $('#edit-power-supply-unit').val(data.power_supply_unit);
+  $('#edit-optical-drive').val(data.optical_drive);
+  $('#edit-storage-drive').val(data.storage_drive);
+  $('#edit-chassis').val(data.chassis);
+    
 
     $('#edit-modal').modal('show');
   });
 
   $('#save-button').click(function() {
     var id = $('#edit-id').val();
-    var brand = $('#edit-brand').val();
-    var model = $('#edit-model').val();
-    var ram = $('#edit-ram').val();
-    var storage = $('#edit-storage').val();
-    var screen_size = $('#edit-screen-size').val();
-    var end_of_life = $('#edit-end-of-life').val();
-    var product_use = $('#edit-product-use').val();
-    
+  var brand = $('#edit-brand').val();
+  var model = $('#edit-model').val();
+  var processor = $('#edit-processor').val();
+  var ram = $('#edit-ram').val();
+  var storage = $('#edit-storage').val();
+  var screen_size = $('#edit-screen-size').val();
+  var end_of_life = $('#edit-end-of-life').val();
+  var device_usage = $('#edit-device-usage').val();
+  var total_co2 = $('#edit-total-co2').val();
+  var transportation = $('#edit-transportation').val();
+  var packaging = $('#edit-packaging').val();
+  var display = $('#edit-display').val();
+  var soc = $('#edit-soc').val();
+  var battery = $('#edit-battery').val();
+  var power_supply_unit = $('#edit-power-supply-unit').val();
+  var optical_drive = $('#edit-optical-drive').val();
+  var storage_drive = $('#edit-storage-drive').val();
+  var chassis = $('#edit-chassis').val();
+
     $.ajax({
       url: '/vendor/update',
       type: 'POST',
       data: {
         id: id,
-        brand: brand,
-        model: model,
-        ram: ram,
-        storage: storage,
-        screen_size: screen_size
-      },
-      success: function(response) {
-        $('#edit-modal').modal('hide');
-        table.ajax.reload();
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        console.log(textStatus, errorThrown);
+      brand: brand,
+      model: model,
+      processor: processor,
+      ram: ram,
+      storage: storage,
+      screen_size: screen_size,
+      end_of_life: end_of_life,
+      device_usage: device_usage,
+      total_co2: total_co2,
+      transportation: transportation,
+      packaging: packaging,
+      display: display,
+      soc: soc,
+      battery: battery,
+      power_supply_unit: power_supply_unit,
+      optical_drive: optical_drive,
+      storage_drive: storage_drive,
+      chassis: chassis
+},
+success: function(response) {
+$('#edit-modal').modal('hide');
+table.ajax.reload();
+if (response.success) {
+        toastr.success(response.message);
+      } else {
+        toastr.error(response.message);
       }
-    });
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      console.log(textStatus, errorThrown);
+      toastr.error('An error occurred while processing your request.');
+    }
   });
 });
+});
+
 
 toastr.options = {
   closeButton: true,
@@ -429,7 +553,7 @@ toastr.options = {
 
 
 </script>    
-        
+<%- include('footer') %>     
   
 
     

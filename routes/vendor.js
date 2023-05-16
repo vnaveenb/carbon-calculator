@@ -22,22 +22,21 @@ router.post('/upload-xls', upload.single('xlsFile'), async (req, res) => {
         message: 'No data found in the uploaded file. Please upload a file with data.',
       });
     }
-    
+
     const vendorId = req.session.userId;
 
     const promises = results.map(async (row) => {
       const {
-        brand, location, end_of_life, product_use, transport,
-        packaging, production, scope_2, scope_3, model,
-        screen_size, processor, ram, storage
+        brand, model, processor, ram, storage, screen_size, date, total_co2, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage
       } = row;
 
+      let jsDate = XLSX.SSF.parse_date_code(date); 
+      let mysqlDate = `${jsDate.y}-${jsDate.m < 10 ? '0' + jsDate.m : jsDate.m}-${jsDate.d < 10 ? '0' + jsDate.d : jsDate.d}`;
+
       await db.execute(
-        'INSERT INTO carbon_emissions (vendor_id, brand, location, end_of_life, product_use, transport, packaging, production, scope_2, scope_3, model, screen_size, processor, ram, storage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO ProductEmissions (brand, model, processor, ram, storage, screen_size, date, total_co2, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage, vendor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
-          vendorId, brand, location, end_of_life, product_use, transport,
-          packaging, production, scope_2, scope_3, model,
-          screen_size, processor, ram, storage
+          brand, model, processor, ram, storage, screen_size, mysqlDate, total_co2, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage, vendorId
         ]
       );
     });
@@ -54,6 +53,7 @@ router.post('/upload-xls', upload.single('xlsFile'), async (req, res) => {
 
 
 
+
 router.get('/test.xlsx', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'test.xlsx'));
 });
@@ -61,16 +61,13 @@ router.get('/test.xlsx', (req, res) => {
 
 router.get('/fetch-data', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT vendor_id, brand, location, end_of_life, product_use, transport, packaging, production, scope_2, scope_3, model, screen_size, processor, ram, storage FROM carbon_emissions WHERE vendor_id = ?', [req.session.userId]);
+    const [rows] = await db.query('SELECT * FROM ProductEmissions WHERE vendor_id = ?', [req.session.userId]);
     res.status(200).json(rows);
   } catch (err) {
     console.error('Error fetching data:', err);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
-
-
-
 
 
 
@@ -85,25 +82,79 @@ router.get('/fetch-data', async (req, res) => {
   
   router.post('/submit-emissions-data', async (req, res) => {
     const vendorId = req.session.userId;
-
     const {
-      brand,model,processor,ram,storage,location,end_of_life,product_use,transport,packaging,production,scope_2,scope_3,screen_size
-    } = req.body;
+      brand = null, 
+      model = null, 
+      processor = null, 
+      ram = null, 
+      storage = null, 
+      screen_size = null, 
+      date = null, 
+      total_co2 = null, 
+      transportation = null, 
+      packaging = null, 
+      display = null, 
+      soc = null, 
+      battery = null, 
+      power_supply_unit = null, 
+      optical_drive = null, 
+      storage_drive = null, 
+      chassis = null, 
+      end_of_life = null, 
+      device_usage = null
+  } = req.body;
 
     try {
-      const [result] = await db.execute(
-        'INSERT INTO carbon_emissions (vendor_id,brand,model,processor,ram,storage,location,end_of_life,product_use,transport,packaging,production,scope_2,scope_3,screen_size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-          vendorId,brand,model,processor,ram,storage,location,end_of_life,product_use,transport,packaging,production,scope_2,scope_3,screen_size
-        ]
+      // Check if a record with the same brand, model, processor, ram, and storage already exists
+      const [rows] = await db.execute(
+        'SELECT * FROM ProductEmissions WHERE brand = ? AND model = ? AND processor = ? AND ram = ? AND storage = ?',
+        [brand, model, processor, ram, storage]
       );
 
-      res.status(200).json({ success: true, message: 'Emissions data submitted successfully' });
+      if (rows.length > 0) {
+        // If a record exists, return an error message
+        res.status(400).json({ success: false, message: 'A record with the same brand, model, processor, ram, and storage already exists' });
+      } else {
+        // total_co2=null;
+        // If no record exists, insert the new record
+        const [result] = await db.execute(
+          'INSERT INTO ProductEmissions (vendor_id,brand,model,processor,ram,storage,screen_size,date,total_co2,transportation,packaging,display,soc,battery,power_supply_unit,optical_drive,storage_drive,chassis,end_of_life,device_usage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [vendorId,brand,model,processor,ram,storage,screen_size,date,total_co2,transportation,packaging,display,soc,battery,power_supply_unit,optical_drive,storage_drive,chassis,end_of_life,device_usage]
+        );
+
+        res.status(200).json({ success: true, message: 'Emissions data submitted successfully' });
+      }
     } catch (err) {
       console.error('Error submitting emissions data:', err);
       res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
-  });
+});
+
+router.post('/update', async (req, res) => {
+  const {
+    id, brand, model, processor, ram, storage, screen_size, end_of_life, device_usage, total_co2, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis
+  } = req.body;
+
+  try {
+    // Update the record
+    const [result] = await db.execute(
+      'UPDATE ProductEmissions SET end_of_life = ?, device_usage = ?, transportation = ?, packaging = ?, display = ?, soc = ?, battery = ?, power_supply_unit = ?, optical_drive = ?, storage_drive = ?, chassis = ? WHERE brand = ? AND model = ? AND processor = ? AND ram = ? AND storage = ? AND screen_size = ?',
+      [end_of_life, device_usage, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, brand, model, processor, ram, storage, screen_size]
+    );
+
+    if (result.affectedRows === 0) {
+      // If no record was updated, return an error message
+      res.status(400).json({ success: false, message: 'No record found with the provided id' });
+    } else {
+      res.status(200).json({ success: true, message: 'Emissions data updated successfully' });
+    }
+  } catch (err) {
+    console.error('Error updating emissions data:', err);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
+
 
 async function isVendor(req, res, next) {
   try {
