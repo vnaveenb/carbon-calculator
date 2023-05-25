@@ -31,7 +31,22 @@
 
   <p>Don't have an account? <a href="/register">Register here</a></p>
   <script>
+    
     $(document).ready(function() {
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const message = urlParams.get('message');
+      const error = urlParams.get('error');
+
+      if (message) {
+        toastr.info(message);
+      }
+
+      if (error) {
+        toastr.error(error);
+      }
+
+
       $("#login-container form").submit(function(event) {
         event.preventDefault();
     
@@ -42,7 +57,7 @@
           type: 'POST',
           data: formData,
           success: function(response) {
-            window.location.href = response.redirect; // Redirect to the appropriate page based on the user's role
+            window.location.href = response.redirect; 
           },
           error: function(jqXHR) {
             if (jqXHR.status === 401) {

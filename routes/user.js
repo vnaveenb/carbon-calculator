@@ -30,7 +30,7 @@ module.exports = function (db) {
   router.get('/actions', isUser, async (req, res) => {
     try {
       const [rows] = await db.query('SELECT * FROM carbon_emissions');
-      res.render('userAction', { data: rows,countries });
+      res.render('userAction', { data: rows, countries });
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal server error');
@@ -42,7 +42,7 @@ module.exports = function (db) {
     res.json(rows.map(row => row.brand));
   });
 
-  
+
   router.get('/unique-models', isUser, async (req, res) => {
     const brand = req.query.brand;
     const [rows] = await db.query('SELECT DISTINCT model FROM productemissions WHERE brand = ?', [brand]);
@@ -54,15 +54,15 @@ module.exports = function (db) {
     const [rows] = await db.query('SELECT DISTINCT model FROM productemissions WHERE brand = ?', [brand]);
     res.json(rows.map(row => row.model));
   });
-  
-  
+
+
   router.get('/unique-processors', isUser, async (req, res) => {
     const brand = req.query.brand;
     const model = req.query.model;
     const [rows] = await db.query('SELECT DISTINCT processor FROM productemissions WHERE brand = ? AND model = ?', [brand, model]);
     res.json(rows.map(row => row.processor));
   });
-  
+
   router.get('/unique-ram', isUser, async (req, res) => {
     const brand = req.query.brand;
     const model = req.query.model;
@@ -70,7 +70,7 @@ module.exports = function (db) {
     const [rows] = await db.query('SELECT DISTINCT ram FROM productemissions WHERE brand = ? AND model = ? AND processor = ?', [brand, model, processor]);
     res.json(rows.map(row => row.ram));
   });
-  
+
   router.get('/unique-storage', isUser, async (req, res) => {
     const brand = req.query.brand;
     const model = req.query.model;
@@ -79,7 +79,7 @@ module.exports = function (db) {
     const [rows] = await db.query('SELECT DISTINCT storage FROM productemissions WHERE brand = ? AND model = ? AND processor = ? AND ram = ?', [brand, model, processor, ram]);
     res.json(rows.map(row => row.storage));
   });
-  
+
   router.get('/unique-screen-size', isUser, async (req, res) => {
     const brand = req.query.brand;
     const model = req.query.model;
@@ -89,7 +89,7 @@ module.exports = function (db) {
     const [rows] = await db.query('SELECT DISTINCT screen_size FROM productemissions WHERE brand = ? AND model = ? AND processor = ? AND ram = ? AND storage = ?', [brand, model, processor, ram, storage]);
     res.json(rows.map(row => row.screen_size));
   });
-  
+
   router.get('/unique-location', isUser, async (req, res) => {
     const brand = req.query.brand;
     const model = req.query.model;
@@ -117,7 +117,7 @@ module.exports = function (db) {
             brand = ? AND model = ? AND processor = ? AND ram = ? AND
             storage = ? AND screen_size = ?
         `, [brand, model, processor, ram, storage, screen_size]);
-  
+
         if (rows.length > 0) {
           const row = rows[0];
           const emissions = {
@@ -129,69 +129,69 @@ module.exports = function (db) {
             scope_2: row.scope_2 * quantity,
             scope_3: row.scope_3 * quantity,
           };
-  
+
           return emissions;
         } else {
           throw new Error('Data not found');
         }
       }));
-  
+
       res.json(results);
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal server error');
     }
   });
-  
 
 
-  
-  
+
+
+
   router.get('/chart-data', isUser, async (req, res) => {
     const { brand, model, processor, ram, storage, location, screen_size, years, quantity } = req.query;
     console.log("TEST");
     const [rows] = await db.query(`
       SELECT
-        brand, model, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage
+      total_co2,brand, model, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage
       FROM productemissions
       WHERE
         brand = ? AND model = ? AND processor = ? AND ram = ? AND
         storage = ? AND screen_size = ? 
     `, [brand, model, processor, ram, storage, screen_size]);
-  
+
     if (rows.length > 0) {
       const row = rows[0];
-  
+
       // Fetch the emissions factor for the selected country
       const [emissionRows] = await db.query(`
         SELECT component, emissions_factor
         FROM emissions_factor
         WHERE country = ?
       `, [location]);
-  
+
       // Create an object mapping the components to their emission factors
       const countryEmissionFactors = emissionRows.reduce((acc, { component, emissions_factor }) => {
         acc[component] = emissions_factor;
         return acc;
       }, {});
-  
+
       const emissions = {
-        transportation: row.transportation * quantity * (countryEmissionFactors.transportation || 1),
-        packaging: row.packaging * quantity * (countryEmissionFactors.packaging || 1),
-        display: row.display * quantity * (countryEmissionFactors.production || 1),
-        soc: row.soc * quantity * (countryEmissionFactors.production || 1),
-        battery: row.battery * quantity * (countryEmissionFactors.production || 1),
-        power_supply_unit: row.power_supply_unit * quantity * (countryEmissionFactors.power_supply_unit || 1),
-        optical_drive: row.optical_drive * quantity * (countryEmissionFactors.optical_drive || 1),
-        storage_drive: row.storage_drive * quantity * (countryEmissionFactors.storage_drive || 1),
-        chassis: row.chassis * quantity * (countryEmissionFactors.chasis || 1),
-        end_of_life: row.end_of_life * quantity * years * (countryEmissionFactors.end_of_life || 1),
-        device_usage: row.device_usage * quantity * (countryEmissionFactors.device_usage || 1),
+        transportation: row.transportation === 0 ? 0 : (row.transportation / 100) * row.total_co2 * quantity * (countryEmissionFactors.transportation || 0.8),
+        packaging: row.packaging === 0 ? 0 : (row.packaging / 100) * row.total_co2 * quantity * (countryEmissionFactors.packaging || 1),
+        display: row.display === 0 ? 0 : (row.display / 100) * row.total_co2 * quantity * (countryEmissionFactors.production || 1),
+        soc: row.soc === 0 ? 0 : (row.soc / 100) * row.total_co2 * quantity * (countryEmissionFactors.production || 1),
+        battery: row.battery === 0 ? 0 : (row.battery / 100) * row.total_co2 * quantity * (countryEmissionFactors.production || 1),
+        power_supply_unit: row.power_supply_unit === 0 ? 0 : (row.power_supply_unit / 100) * row.total_co2 * quantity * (countryEmissionFactors.power_supply_unit || 1),
+        optical_drive: row.optical_drive === 0 ? 0 : (row.optical_drive / 100) * row.total_co2 * quantity * (countryEmissionFactors.optical_drive || 1),
+        storage_drive: row.storage_drive === 0 ? 0 : (row.storage_drive / 100) * row.total_co2 * quantity * (countryEmissionFactors.storage_drive || 1),
+        chassis: row.chassis === 0 ? 0 : (row.chassis / 100) * row.total_co2 * quantity * (countryEmissionFactors.chasis || 1),
+        end_of_life: row.end_of_life === 0 ? 0 : (row.end_of_life / 100) * row.total_co2 * quantity * years * (countryEmissionFactors.end_of_life || 0.7),
+        device_usage: row.device_usage === 0 ? 0 : (row.device_usage / 100) * row.total_co2 * quantity * (countryEmissionFactors.device_usage || 1),
         brand: brand,
         model: model,
       };
-  
-  
+
+
       res.json(emissions);
     } else {
       res.status(404).send('Data not found');
@@ -199,94 +199,94 @@ module.exports = function (db) {
   });
 
 
-// Save user's search details
-router.post('/save-search', isUser, async (req, res) => {
-  const { brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions } = req.body;
-  const user_id = req.session.userId;
-  console.log(total_carbon_emissions);
+  // Save user's search details
+  router.post('/save-search', isUser, async (req, res) => {
+    const { brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions } = req.body;
+    const user_id = req.session.userId;
+    console.log(total_carbon_emissions);
 
-  try {
-    await db.query(`
+    try {
+      await db.query(`
       INSERT INTO user_searches 
       (user_id, brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [user_id, brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions]);
 
-    res.status(200).send('Search saved successfully');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal server error');
-  }
-});
+      res.status(200).send('Search saved successfully');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal server error');
+    }
+  });
 
 
 
 
 
-router.get('/search-history', isUser, async (req, res) => {
-  const user_id = req.session.userId;
+  router.get('/search-history', isUser, async (req, res) => {
+    const user_id = req.session.userId;
 
-  try {
-    const [rows] = await db.query(`
+    try {
+      const [rows] = await db.query(`
       SELECT user_id, brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions
       FROM user_searches
       WHERE user_id = ?
     `, [user_id]);
 
-    res.json(rows);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal server error');
-  }
-});
-
-
-  
-
-
-
-
-
-
-
-router.post('/download', async (req, res) => {
-  const { tableData, pieChartData, barChartData } = req.body;
-
-  // Convert the charts to images
-  const pieChartImage = await chartToImage(pieChartData);
-  const barChartImage = await chartToImage(barChartData);
-
-  // Create the PDF document
-  const docDefinition = {
-    content: [
-      { text: 'Carbon Emission Report', style: 'header' },
-      { image: pieChartImage },
-      { image: barChartImage },
-      { table: { body: tableData }, layout: 'lightHorizontalLines' },
-    ],
-  };
-
-  const pdfDoc = pdfMake.createPdf(docDefinition);
-  pdfDoc.getBase64((base64String) => {
-    res.writeHead(200, {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'attachment;filename=report.pdf',
-    });
-    const download = Buffer.from(base64String, 'base64');
-    res.end(download);
+      res.json(rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal server error');
+    }
   });
-});
 
-async function chartToImage(chartData) {
-  const canvas = createCanvas(400, 400);
-  const ctx = canvas.getContext('2d');
-  new Chart(ctx, chartData);  // Assuming chartData includes the type, data, and options
-  return canvas.toDataURL().split(';base64,')[1];
-}
 
-module.exports = router;
 
-  
+
+
+
+
+
+
+
+  router.post('/download', async (req, res) => {
+    const { tableData, pieChartData, barChartData } = req.body;
+
+    // Convert the charts to images
+    const pieChartImage = await chartToImage(pieChartData);
+    const barChartImage = await chartToImage(barChartData);
+
+    // Create the PDF document
+    const docDefinition = {
+      content: [
+        { text: 'Carbon Emission Report', style: 'header' },
+        { image: pieChartImage },
+        { image: barChartImage },
+        { table: { body: tableData }, layout: 'lightHorizontalLines' },
+      ],
+    };
+
+    const pdfDoc = pdfMake.createPdf(docDefinition);
+    pdfDoc.getBase64((base64String) => {
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment;filename=report.pdf',
+      });
+      const download = Buffer.from(base64String, 'base64');
+      res.end(download);
+    });
+  });
+
+  async function chartToImage(chartData) {
+    const canvas = createCanvas(400, 400);
+    const ctx = canvas.getContext('2d');
+    new Chart(ctx, chartData);  // Assuming chartData includes the type, data, and options
+    return canvas.toDataURL().split(';base64,')[1];
+  }
+
+  module.exports = router;
+
+
 
 
 

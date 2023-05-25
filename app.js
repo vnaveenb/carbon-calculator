@@ -41,7 +41,7 @@ app.get('/register', (req, res) => {
   res.render('register');
 });
 
-const PORT = process.env.PORT || 3200;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

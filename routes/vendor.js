@@ -22,13 +22,34 @@ router.post('/upload-xls', upload.single('xlsFile'), async (req, res) => {
         message: 'No data found in the uploaded file. Please upload a file with data.',
       });
     }
+    console.log(results);
 
     const vendorId = req.session.userId;
 
     const promises = results.map(async (row) => {
+     
+
       const {
-        brand, model, processor, ram, storage, screen_size, date, total_co2, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage
-      } = row;
+        brand = null, 
+        model = null, 
+        processor = null, 
+        ram = null, 
+        storage = null, 
+        screen_size = null, 
+        date = null, 
+        total_co2 = null, 
+        transportation = null, 
+        packaging = null, 
+        display = null, 
+        soc = null, 
+        battery = null, 
+        power_supply_unit = null, 
+        optical_drive = null, 
+        storage_drive = null, 
+        chassis = null, 
+        end_of_life = null, 
+        device_usage = null
+    } = row;
 
       let jsDate = XLSX.SSF.parse_date_code(date); 
       let mysqlDate = `${jsDate.y}-${jsDate.m < 10 ? '0' + jsDate.m : jsDate.m}-${jsDate.d < 10 ? '0' + jsDate.d : jsDate.d}`;

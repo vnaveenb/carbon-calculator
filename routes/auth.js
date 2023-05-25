@@ -117,7 +117,7 @@ router.post('/register', async (req, res) => {
     // Check if the user already exists
     const [userRows] = await db.query('SELECT id FROM users_registration WHERE username = ? OR email = ?', [username, email]);
     if (userRows.length > 0) {
-      res.status(400).send('User with the given username or email already exists');
+      res.status(400).json({ error: 'User with the given username or email already exists' });
       return;
     }
 
@@ -142,7 +142,8 @@ router.post('/register', async (req, res) => {
     };
     await transporter.sendMail(mailOptions);
 
-    res.status(200).send('Registration successful. Please check your email to verify your account.');
+    // res.status(200).send('Registration successful. Please check your email to verify your account.');
+    res.status(200).json({ success: 'Registration successful. Please check your email to verify your account.' });
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal server error');
@@ -171,19 +172,19 @@ router.get('/verify-email/:token', async (req, res) => {
     const [rows] = await db.query('SELECT id, role FROM users_registration WHERE verification_token = ?', [token]);
 
     if (rows.length === 0) {
-      res.status(404).send('Verification token not found');
+      res.redirect('/auth/login?message=Verification token not found.');
       return;
     }
 
     const user = rows[0];
     await db.query('UPDATE users_registration SET email_verified = 1, verification_token = NULL WHERE id = ?', [user.id]);
-
-    res.status(200).send('Email successfully verified. You can now log in.');
+    res.redirect('/auth/login?message=Email successfully verified. You can now log in.');
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal server error');
   }
 });
+
 
 
 
