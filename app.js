@@ -34,7 +34,7 @@ app.use('/user', userRoutes);
 app.use('/api', apiRoutes);
 
 app.get('/', (req, res) => {
-  res.redirect('/auth/login');
+  res.render('welcome');
 });
 
 app.get('/login', (req, res) => {
