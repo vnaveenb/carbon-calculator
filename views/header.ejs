@@ -1,108 +1,111 @@
-  
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"  crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-
- 
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jszip-2.5.0/dt-1.11.3/b-2.0.1/b-colvis-2.0.1/b-flash-2.0.1/b-html5-2.0.1/b-print-2.0.1/datatables.min.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.0.1/css/buttons.dataTables.min.css"/>
- 
-    
-    <meta name="description" content="At Sustainable Tech Calculator, we provide an easy-to-use carbon emissions calculator for laptops. Understand and reduce your tech's environmental impact for a more sustainable future.Calculate and understand the carbon emissions of your laptop usage. Join us in our mission for greater sustainability and reducing carbon footprints.">
-    <meta name="keywords" content="Sustainability, Carbon Emissions, Carbon Calculator, Laptop Carbon Footprint, Green Tech, Energy Efficiency">
-    <meta name="author" content="Sustainable Tech Calculator - Naveen Busiraju">
-
-    <meta property="og:image" content="URL_TO_YOUR_IMAGE">
-
-  <!-- Twitter -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calculate and understand the carbon emissions of your laptop or device. Sustainable Tech Calculator helps you measure and reduce your tech environmental impact.">
+  <meta name="keywords" content="Sustainability, Carbon Emissions, Carbon Calculator, Laptop Carbon Footprint, Green Tech, Energy Efficiency">
+  <meta name="author" content="Sustainable Tech Calculator - Naveen Busiraju">
+  <meta property="og:title" content="Sustainable Tech Calculator">
+  <meta property="og:description" content="Calculate carbon emissions for laptops and tech devices.">
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://sustainabletechcalculator.com/">
-  <meta property="twitter:title" content="Sustainability and Carbon Emissions Calculator for Laptops | Sustainable Tech Calculator">
-  <meta property="twitter:description" content="Calculate and understand the carbon emissions of your laptop usage. Join us in our mission for greater sustainability and reducing carbon footprints.">
-  <meta property="twitter:image" content="URL_TO_YOUR_IMAGE">
-    
- 
-  <title>App</title>
-  <style>
+  <meta property="twitter:title" content="Sustainable Tech Calculator">
+  <meta property="twitter:description" content="Calculate and understand the carbon emissions of your laptop usage.">
+  <title>Sustainable Tech Calculator</title>
 
-.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
-    
-    margin-left: 20px !important;
-}
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <!-- DataTables (Bootstrap 5) -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <!-- Theme -->
+  <link rel="stylesheet" href="/css/theme.css">
 
-
-
-    .dropdown {
-      margin-left: auto;
-    }
-
-    .dropdown button {
-      border-radius: 60%;
-      font-size: 1.2rem;
-      padding: 15px 10px;
-    }
-
-    .dropdown-menu {
-      right: 4px;
-      left: auto;
-    }
-
-    .dropdown-menu.show {
-    left: auto;
-    display: block;
-}
-  </style>
+  <!-- jQuery (needed for DataTables + Toastr) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Sustainable Tech Calculator</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <% if (locals.user && locals.user.role === 'admin') { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/admin/welcome">Admin Welcome</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/admin/action">Admin Action</a>
-            </li>
-          <% } else if (locals.user && locals.user.role === 'vendor') { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/vendor/welcome">Vendor Welcome</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/vendor/action">Vendor Action</a>
-            </li>
-          <% } else if (locals.user && locals.user.role === 'user') { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/user/welcome">User Welcome</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/user/actions">Carbon Calculator</a>
-            </li>
-          <% } %>
-        </ul>
-        <% if (locals.user) { %>
+
+<nav class="navbar navbar-expand-lg navbar-eco">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand fw-bold" href="/">
+      <i class="fa-solid fa-leaf me-2"></i>Sustainable Tech Calculator
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+      aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <% if (locals.user && locals.user.role === 'admin') { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/welcome"><i class="fa-solid fa-gauge-high me-1"></i>Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/action"><i class="fa-solid fa-sliders me-1"></i>Emissions Config</a>
+          </li>
+
+        <% } else if (locals.user && locals.user.role === 'vendor') { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/vendor/welcome"><i class="fa-solid fa-gauge-high me-1"></i>Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/vendor/action"><i class="fa-solid fa-upload me-1"></i>Upload Data</a>
+          </li>
+
+        <% } else if (locals.user && locals.user.role === 'user') { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/user/welcome"><i class="fa-solid fa-gauge-high me-1"></i>Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/user/actions"><i class="fa-solid fa-calculator me-1"></i>Carbon Calculator</a>
+          </li>
+
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/user/actions"><i class="fa-solid fa-calculator me-1"></i>Carbon Calculator</a>
+          </li>
+        <% } %>
+
+      </ul>
+
+      <div class="d-flex align-items-center gap-2">
+        <% if (locals.user && locals.user.role && locals.user.role !== 'guest' && locals.user.id) { %>
+          <!-- Authenticated user dropdown -->
           <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa-solid fa-user"></i>
+            <button class="user-avatar-btn dropdown-toggle" type="button"
+              id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+              style="border:none; background:rgba(255,255,255,0.2);">
+              <%= locals.user.username ? locals.user.username.charAt(0).toUpperCase() : 'U' %>
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li><a class="dropdown-item" href="#">UserName: <%= user.username %></a></li>
-              <li><a class="dropdown-item" href="#">Email: <%= user.email %></a></li>
-              <li><a class="dropdown-item" href="#">Role: <%= user.role %></a></li>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li class="dropdown-item-text fw-semibold text-eco"><%= locals.user.username %></li>
+              <li class="dropdown-item-text small text-muted"><%= locals.user.email %></li>
+              <li class="dropdown-item-text small">
+                <span class="badge-eco"><%= locals.user.role %></span>
+              </li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+              <li>
+                <a class="dropdown-item text-danger" href="/auth/logout">
+                  <i class="fa-solid fa-right-from-bracket me-1"></i>Logout
+                </a>
+              </li>
             </ul>
           </div>
+        <% } else { %>
+          <!-- Guest / not logged in -->
+          <a class="btn btn-eco-outline btn-sm px-3" href="/auth/login">Login</a>
+          <a class="btn btn-eco-accent btn-sm px-3" href="/register">Register</a>
         <% } %>
       </div>
     </div>
-  </nav>
- 
+  </div>
+</nav>

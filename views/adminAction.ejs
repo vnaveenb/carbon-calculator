@@ -1,212 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Actions</title>
-</head>
-<body>
-    <%- include('header') %>
+<%- include('header') %>
 
+<div class="container py-4">
+  <div class="page-header-bar d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h2><i class="fa-solid fa-sliders me-2"></i>Emissions Config</h2>
+      <p>Manage country electricity grid emission factors.</p>
+    </div>
+    <a href="/admin/welcome" class="btn btn-eco-outline fw-semibold" style="border-color:white;color:white;">
+      <i class="fa-solid fa-arrow-left me-2"></i>Dashboard
+    </a>
+  </div>
 
-    <div class="mb-3">
-        <label for="country-select" class="form-label">Select Country</label>
-        <select class="form-control" id="country-select">
-          <option value="">All Countries</option>
-          <% countries.forEach(country => { %>
-            <option value="<%= country %>"><%= country %></option>
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label for="country-select" class="form-label fw-semibold">Filter by Country</label>
+      <select class="form-select" id="country-select">
+        <option value="">All Countries</option>
+        <% countries.forEach(function(country) { %>
+          <option value="<%= country %>"><%= country %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-md-8 d-flex align-items-end justify-content-end">
+      <button class="btn btn-eco fw-semibold" data-bs-toggle="modal" data-bs-target="#addCountryModal">
+        <i class="fa-solid fa-plus me-2"></i>Add / Update Factor
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <h5 class="section-title">Emission Factors</h5>
+    <div class="table-responsive">
+      <table id="emissions-table" class="table table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Country Code</th>
+            <th>Component</th>
+            <th>Factor (kg CO₂e/kWh)</th>
+            <th>Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% emissions.forEach(function(e) { %>
+            <tr>
+              <td><strong><%= e.country %></strong></td>
+              <td><%= e.component %></td>
+              <td><%= Number(e.emissions_factor).toFixed(3) %></td>
+              <td>
+                <button class="btn btn-sm btn-eco edit-button">
+                  <i class="fa-solid fa-pen me-1"></i>Edit
+                </button>
+              </td>
+            </tr>
           <% }) %>
-        </select>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addCountryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="background:var(--clr-primary);color:white;">
+        <h5 class="modal-title"><i class="fa-solid fa-plus me-2"></i>Add / Update Factor</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-
-    <div class="container mt-5">
-        <h2>Emissions Factor</h2>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCountryModal">Add New Country</button>
-        <table id="emissions-table" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Country</th>
-                    <th>Component</th>
-                    <th>Emissions Factor</th>
-                    <th>Edit</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% emissions.forEach(emission => { %>
-                    <tr>
-                        <td><%= emission.country %></td>
-                        <td><%= emission.component %></td>
-                        <td><%= emission.emissions_factor %></td>
-                        <td>
-                            <button class="btn btn-primary edit-button" data-bs-toggle="modal" data-bs-target="#editEmissionModal">Edit</button>
-                          </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Add emissions component Modal -->
-    <div class="modal fade" id="addCountryModal" tabindex="-1" aria-labelledby="addCountryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addCountryModalLabel">Add New Country</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="add-country-form">
-                        <div class="mb-3">
-                            <label for="country" class="form-label">Country</label>
-                            <input type="text" class="form-control" id="country" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="component" class="form-label">Component</label>
-                            <input type="text" class="form-control" id="component" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="emissions-factor" class="form-label">Emissions Factor</label>
-                            <input type="number" step="any" class="form-control" id="emissions-factor" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Country</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    <!-- Edit Emission Modal -->
-<div class="modal fade" id="editEmissionModal" tabindex="-1" aria-labelledby="editEmissionModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editEmissionModalLabel">Edit Emission</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="edit-emission-form">
-            <input type="hidden" id="edit-id">
-            <div class="mb-3">
-              <label for="edit-country" class="form-label">Country</label>
-              <input type="text" class="form-control" id="edit-country" required disabled>
-            </div>
-            <div class="mb-3">
-              <label for="edit-component" class="form-label">Component</label>
-              <input type="text" class="form-control" id="edit-component" required disabled>
-            </div>
-            <div class="mb-3">
-              <label for="edit-emissions-factor" class="form-label">Emissions Factor</label>
-              <input type="number" step="any" class="form-control" id="edit-emissions-factor" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Update Emission</button>
-          </form>
-        </div>
+      <div class="modal-body">
+        <form id="add-country-form" action="/admin/api/emissions" method="POST">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Country Code (ISO)</label>
+            <input type="text" class="form-control" id="country" name="country" placeholder="e.g. GB, US, DE" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Component</label>
+            <input type="text" class="form-control" id="component" name="component" value="device_usage" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Emissions Factor (kg CO₂e/kWh)</label>
+            <input type="number" step="0.001" min="0" class="form-control" id="emissions-factor" name="emissions_factor" required>
+          </div>
+          <button type="submit" class="btn btn-eco w-100 fw-semibold">Save Factor</button>
+        </form>
       </div>
     </div>
   </div>
-  
+</div>
 
-    <%- include('footer') %>
-    <script>
-        // Initialize DataTable and get reference to instance
-        const table = $('#emissions-table').DataTable();
-    
-        // Get reference to the dropdown
-        const select = document.querySelector('#country-select');
-    
-        // Add an event listener to the dropdown
-        select.addEventListener('change', function() {
-            // Get the selected country
-            const country = this.value;
-    
-            // Filter table using DataTables API
-            // Use column().search() for specific column search
-            table.column(0).search(country).draw();
-        });
-    
-        document.getElementById('add-country-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const country = document.getElementById('country').value;
-            const component = document.getElementById('component').value;
-            const emissionsFactor = document.getElementById('emissions-factor').value;
-    
-            try {
-                const response = await fetch('/admin/api/emissions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        country,
-                        component,
-                        emissions_factor: emissionsFactor
-                    })
-                });
-    
-                if (response.ok) {
-                    toastr.success('Successfully added country emissions data');
-                    location.reload();
-                } else {
-                    toastr.error('Failed to add country emissions data');
-                }
-            } catch (error) {
-                toastr.error(error);
-            }
-        });
+<!-- Edit Modal -->
+<div class="modal fade" id="editEmissionModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="background:var(--clr-secondary);color:white;">
+        <h5 class="modal-title"><i class="fa-solid fa-pen me-2"></i>Edit Emission Factor</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-emission-form">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Country Code</label>
+            <input type="text" class="form-control" id="edit-country" disabled>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Component</label>
+            <input type="text" class="form-control" id="edit-component" disabled>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Emissions Factor</label>
+            <input type="number" step="0.001" min="0" class="form-control" id="edit-emissions-factor" required>
+          </div>
+          <button type="submit" class="btn btn-eco w-100 fw-semibold">Update Factor</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script>
+$(document).ready(function () {
+  const table = $('#emissions-table').DataTable({ pageLength: 25 });
 
+  $('#country-select').on('change', function () {
+    table.column(0).search(this.value).draw();
+  });
 
+  table.on('click', '.edit-button', function (event) {
+    const row = table.row($(event.currentTarget).closest('tr'));
+    const data = row.data();
+    document.getElementById('edit-country').value = data[0];
+    document.getElementById('edit-component').value = data[1];
+    document.getElementById('edit-emissions-factor').value = data[2];
+    new bootstrap.Modal(document.getElementById('editEmissionModal')).show();
+  });
 
-       
-
-
-
-        table.on('click', '.edit-button', (event) => {
-  const row = table.row($(event.target).closest('tr'));
-  const data = row.data();
-
-  console.log('Row data:', data);
-
-  document.getElementById('edit-country').value = data[0];
-  document.getElementById('edit-component').value = data[1];
-  document.getElementById('edit-emissions-factor').value = data[2];
-
-  const modal = new bootstrap.Modal(document.getElementById('editEmissionModal'));
-  modal.show();
-});
-
-document.getElementById('edit-emission-form').addEventListener('submit', async (event) => {
-  event.preventDefault();
-
-  const country = document.getElementById('edit-country').value;
-  const component = document.getElementById('edit-component').value;
-  const emissionsFactor = document.getElementById('edit-emissions-factor').value;
-
-  console.log('Form values:', country, component, emissionsFactor);
-
-  try {
-    const response = await axios.patch(`/admin/api/emissions/${country}/${component}`, {
-      emissions_factor: emissionsFactor
-    });
-
-    console.log('Response:', response);
-
-    if (response.status === 200) {
-      toastr.success('Successfully updated emissions data');
-      location.reload();
+  document.getElementById('edit-emission-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const country = document.getElementById('edit-country').value;
+    const component = document.getElementById('edit-component').value;
+    const factor = document.getElementById('edit-emissions-factor').value;
+    try {
+      const resp = await axios.patch(`/admin/api/emissions/${country}/${component}`, { emissions_factor: factor });
+      if (resp.status === 200) {
+        toastr.success('Factor updated');
+        location.reload();
+      }
+    } catch {
+      toastr.error('Failed to update factor');
     }
-  } catch (error) {
-    console.log('Error:', error);
-    toastr.error('Failed to update emissions data');
-  }
+  });
 });
-
-
 </script>
 
-    
-</body>
-</html>
-
+<%- include('footer') %>

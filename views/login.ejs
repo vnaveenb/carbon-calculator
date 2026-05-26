@@ -1,82 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sustainability and Carbon Emissions Calculator for Laptops</title>
-  <title>Login</title>
-</head>
-<body>
-  <%- include('header') %>
-  <div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11"></div>
+<%- include('header') %>
 
-  <h1>Login</h1>
-  <div id="login-container">
-    <form action="/auth/login" method="POST">
-      <div>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-      </div>
-      <button class="btn btn-primary" type="submit">Login</button>
-    </form>
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <i class="fa-solid fa-leaf fa-2x opacity-80"></i>
+      <h4>Welcome Back</h4>
+      <p class="mb-0 small opacity-80">Sign in to your account</p>
+    </div>
+    <div class="auth-body">
+      <div id="toast-container"></div>
+
+      <form id="login-form" action="/auth/login" method="POST">
+        <div class="mb-3">
+          <label for="username" class="form-label fw-semibold">Username</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="fa-solid fa-user text-eco"></i>
+            </span>
+            <input type="text" id="username" name="username" class="form-control border-start-0" placeholder="Your username" required>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="password" class="form-label fw-semibold">Password</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0">
+              <i class="fa-solid fa-lock text-eco"></i>
+            </span>
+            <input type="password" id="password" name="password" class="form-control border-start-0" placeholder="Your password" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-eco w-100 py-2 fw-semibold">
+          <i class="fa-solid fa-right-to-bracket me-2"></i>Login
+        </button>
+      </form>
+
+      <hr class="my-3">
+      <p class="text-center mb-2 small text-muted">Don't have an account?
+        <a href="/register" class="text-eco fw-semibold">Register here</a>
+      </p>
+      <p class="text-center mb-0 small text-muted">
+        Or <a href="/user/actions" class="text-eco fw-semibold">continue as guest</a>
+      </p>
+    </div>
   </div>
-  
+</div>
 
-  <!-- <a href="/auth/google">Sign in with Google</a>
-<a href="/auth/facebook">Sign in with Facebook</a> -->
+<script>
+$(document).ready(function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const message = urlParams.get('message');
+  const error = urlParams.get('error');
+  if (message) toastr.info(message);
+  if (error) toastr.error(error);
 
-
-  <p>Don't have an account? <a href="/register">Register here</a></p>
-  <script>
-    
-    $(document).ready(function() {
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const message = urlParams.get('message');
-      const error = urlParams.get('error');
-
-      if (message) {
-        toastr.info(message);
+  $('#login-form').submit(function (event) {
+    event.preventDefault();
+    $.ajax({
+      url: '/auth/login',
+      type: 'POST',
+      data: $(this).serialize(),
+      success: function (response) {
+        window.location.href = response.redirect;
+      },
+      error: function (jqXHR) {
+        const msg = jqXHR.status === 401
+          ? JSON.parse(jqXHR.responseText).error
+          : 'Internal server error';
+        toastr.error(msg);
       }
-
-      if (error) {
-        toastr.error(error);
-      }
-
-
-      $("#login-container form").submit(function(event) {
-        event.preventDefault();
-    
-        const formData = $(this).serialize();
-    
-        $.ajax({
-          url: '/auth/login',
-          type: 'POST',
-          data: formData,
-          success: function(response) {
-            window.location.href = response.redirect; 
-          },
-          error: function(jqXHR) {
-            if (jqXHR.status === 401) {
-              const errorMessage = JSON.parse(jqXHR.responseText).error;
-              toastr.error(errorMessage);
-            } else {
-              toastr.error('Internal server error');
-            }
-          }
-        });
-      });
     });
-    </script>
-    
+  });
+});
+</script>
 
-
-
-    
-  <%- include('footer') %>
-</body>
-</html>
+<%- include('footer') %>

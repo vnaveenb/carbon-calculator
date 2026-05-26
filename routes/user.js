@@ -1,295 +1,96 @@
-module.exports = function (db) {
+module.exports = function (store) {
   const express = require('express');
   const router = express.Router();
-  const countries = require('countries-list').countries;
+  const { countries } = require('countries-list');
 
-  const pdfMake = require('pdfmake');
-  const { createCanvas, loadImage } = require('canvas');
-
-  // user.js
-  router.get('/welcome', isUser, (req, res) => {
-    res.render('userWelcome');
-  });
-
-  // Middleware example for checking if the user is a regular user
-  async function isUser(req, res, next) {
-    try {
-      const [rows] = await db.query('SELECT username, email, role FROM users_registration WHERE id = ?', [req.session.userId]);
-      if (rows.length > 0 && rows[0].role === 'user') {
-        res.locals.user = rows[0];
-        next();
-      } else {
-        res.redirect('/login');
+  function ensureAccessible(req, res, next) {
+    if (req.session.userId) {
+      const user = store.users.findById(req.session.userId);
+      if (user) {
+        res.locals.user = { id: user.id, username: user.username, email: user.email, role: user.role };
+        return next();
       }
-    } catch (error) {
-      console.error(error);
-      res.redirect('/login');
     }
+    res.locals.user = { username: 'Guest', email: '', role: 'guest', id: null };
+    next();
   }
 
-  router.get('/actions', isUser, async (req, res) => {
-    try {
-      const [rows] = await db.query('SELECT * FROM carbon_emissions');
-      res.render('userAction', { data: rows, countries });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal server error');
+  function requireUser(req, res, next) {
+    if (!req.session.userId) return res.redirect('/auth/login');
+    const user = store.users.findById(req.session.userId);
+    if (!user || user.role !== 'user') return res.redirect('/auth/login');
+    res.locals.user = { id: user.id, username: user.username, email: user.email, role: user.role };
+    next();
+  }
+
+  router.get('/welcome', requireUser, (req, res) => {
+    res.render('userWelcome', { user: res.locals.user });
+  });
+
+  router.get('/actions', ensureAccessible, (req, res) => {
+    res.render('userAction', { countries, user: res.locals.user });
+  });
+
+  router.get('/unique-brands', ensureAccessible, (req, res) => {
+    res.json(store.products.getUniqueBrands());
+  });
+
+  router.get('/unique-models', ensureAccessible, (req, res) => {
+    const { brand } = req.query;
+    res.json(store.products.getModelsForBrand(brand || ''));
+  });
+
+  router.get('/chart-data', ensureAccessible, (req, res) => {
+    const { brand, model, location, years, quantity } = req.query;
+    const qty = parseFloat(quantity) || 1;
+    const yrs = parseFloat(years) || 1;
+
+    const product = store.products.getProductData(brand, model);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
     }
-  });
 
-  router.get('/unique-brands', isUser, async (req, res) => {
-    const [rows] = await db.query('SELECT DISTINCT brand FROM productemissions');
-    res.json(rows.map(row => row.brand));
-  });
+    const factor = store.emissionsFactors.getFactor(location);
 
-
-  router.get('/unique-models', isUser, async (req, res) => {
-    const brand = req.query.brand;
-    const [rows] = await db.query('SELECT DISTINCT model FROM productemissions WHERE brand = ?', [brand]);
-    res.json(rows.map(row => row.model));
-  });
-
-  router.get('/unique-models-api', async (req, res) => {
-    const brand = req.query.brand;
-    const [rows] = await db.query('SELECT DISTINCT model FROM productemissions WHERE brand = ?', [brand]);
-    res.json(rows.map(row => row.model));
-  });
-
-
-  router.get('/unique-processors', isUser, async (req, res) => {
-    const brand = req.query.brand;
-    const model = req.query.model;
-    const [rows] = await db.query('SELECT DISTINCT processor FROM productemissions WHERE brand = ? AND model = ?', [brand, model]);
-    res.json(rows.map(row => row.processor));
-  });
-
-  router.get('/unique-ram', isUser, async (req, res) => {
-    const brand = req.query.brand;
-    const model = req.query.model;
-    const processor = req.query.processor;
-    const [rows] = await db.query('SELECT DISTINCT ram FROM productemissions WHERE brand = ? AND model = ? AND processor = ?', [brand, model, processor]);
-    res.json(rows.map(row => row.ram));
-  });
-
-  router.get('/unique-storage', isUser, async (req, res) => {
-    const brand = req.query.brand;
-    const model = req.query.model;
-    const processor = req.query.processor;
-    const ram = req.query.ram;
-    const [rows] = await db.query('SELECT DISTINCT storage FROM productemissions WHERE brand = ? AND model = ? AND processor = ? AND ram = ?', [brand, model, processor, ram]);
-    res.json(rows.map(row => row.storage));
-  });
-
-  router.get('/unique-screen-size', isUser, async (req, res) => {
-    const brand = req.query.brand;
-    const model = req.query.model;
-    const processor = req.query.processor;
-    const ram = req.query.ram;
-    const storage = req.query.storage;
-    const [rows] = await db.query('SELECT DISTINCT screen_size FROM productemissions WHERE brand = ? AND model = ? AND processor = ? AND ram = ? AND storage = ?', [brand, model, processor, ram, storage]);
-    res.json(rows.map(row => row.screen_size));
-  });
-
-  router.get('/unique-location', isUser, async (req, res) => {
-    const brand = req.query.brand;
-    const model = req.query.model;
-    const processor = req.query.processor;
-    const ram = req.query.ram;
-    const storage = req.query.storage;
-    const screen_size = req.query.screen_size;
-    const [rows] = await db.query('SELECT DISTINCT location FROM carbon_emissions WHERE brand = ? AND model = ? AND processor = ? AND ram = ? AND storage = ? AND screen_size = ?', [brand, model, processor, ram, storage, screen_size]);
-    res.json(rows.map(row => row.location));
-  });
-
-
-
-  router.post('/multi-chart-data', isUser, async (req, res) => {
-    const formsData = req.body.formsData;
-    console.log("Multi Chart data");
-    try {
-      const results = await Promise.all(formsData.map(async form => {
-        const { brand, model, processor, ram, storage, location, screen_size, years, quantity } = form;
-        const [rows] = await db.query(`
-          SELECT
-            end_of_life, product_use, transport, packaging, production, scope_2, scope_3
-          FROM carbon_emissions
-          WHERE
-            brand = ? AND model = ? AND processor = ? AND ram = ? AND
-            storage = ? AND screen_size = ?
-        `, [brand, model, processor, ram, storage, screen_size]);
-
-        if (rows.length > 0) {
-          const row = rows[0];
-          const emissions = {
-            end_of_life: row.end_of_life * quantity * years,
-            product_use: row.product_use * quantity,
-            transport: row.transport * quantity,
-            packaging: row.packaging * quantity,
-            production: row.production * quantity,
-            scope_2: row.scope_2 * quantity,
-            scope_3: row.scope_3 * quantity,
-          };
-
-          return emissions;
-        } else {
-          throw new Error('Data not found');
-        }
-      }));
-
-      res.json(results);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal server error');
-    }
-  });
-
-
-
-
-
-  router.get('/chart-data', isUser, async (req, res) => {
-    const { brand, model, processor, ram, storage, location, screen_size, years, quantity } = req.query;
-    console.log("TEST");
-    const [rows] = await db.query(`
-      SELECT
-      total_co2,brand, model, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage
-      FROM productemissions
-      WHERE
-        brand = ? AND model = ? AND processor = ? AND ram = ? AND
-        storage = ? AND screen_size = ? 
-    `, [brand, model, processor, ram, storage, screen_size]);
-
-    if (rows.length > 0) {
-      const row = rows[0];
-
-      // Fetch the emissions factor for the selected country
-      const [emissionRows] = await db.query(`
-        SELECT component, emissions_factor
-        FROM emissions_factor
-        WHERE country = ?
-      `, [location]);
-
-      // Create an object mapping the components to their emission factors
-      const countryEmissionFactors = emissionRows.reduce((acc, { component, emissions_factor }) => {
-        acc[component] = emissions_factor;
-        return acc;
-      }, {});
-
-      const emissions = {
-        transportation: row.transportation === 0 ? 0 : (row.transportation / 100) * row.total_co2 * quantity * (countryEmissionFactors.transportation || 0.8),
-        packaging: row.packaging === 0 ? 0 : (row.packaging / 100) * row.total_co2 * quantity * (countryEmissionFactors.packaging || 1),
-        display: row.display === 0 ? 0 : (row.display / 100) * row.total_co2 * quantity * (countryEmissionFactors.production || 1),
-        soc: row.soc === 0 ? 0 : (row.soc / 100) * row.total_co2 * quantity * (countryEmissionFactors.production || 1),
-        battery: row.battery === 0 ? 0 : (row.battery / 100) * row.total_co2 * quantity * (countryEmissionFactors.production || 1),
-        power_supply_unit: row.power_supply_unit === 0 ? 0 : (row.power_supply_unit / 100) * row.total_co2 * quantity * (countryEmissionFactors.power_supply_unit || 1),
-        optical_drive: row.optical_drive === 0 ? 0 : (row.optical_drive / 100) * row.total_co2 * quantity * (countryEmissionFactors.optical_drive || 1),
-        storage_drive: row.storage_drive === 0 ? 0 : (row.storage_drive / 100) * row.total_co2 * quantity * (countryEmissionFactors.storage_drive || 1),
-        chassis: row.chassis === 0 ? 0 : (row.chassis / 100) * row.total_co2 * quantity * (countryEmissionFactors.chasis || 1),
-        end_of_life: row.end_of_life === 0 ? 0 : (row.end_of_life / 100) * row.total_co2 * quantity * years * (countryEmissionFactors.end_of_life || 0.7),
-        device_usage: row.device_usage === 0 ? 0 : (row.device_usage / 100) * row.total_co2 * quantity * (countryEmissionFactors.device_usage || 1),
-        brand: brand,
-        model: model,
-      };
-
-
-      res.json(emissions);
-    } else {
-      res.status(404).send('Data not found');
-    }
-  });
-
-
-  // Save user's search details
-  router.post('/save-search', isUser, async (req, res) => {
-    const { brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions } = req.body;
-    const user_id = req.session.userId;
-    console.log(total_carbon_emissions);
-
-    try {
-      await db.query(`
-      INSERT INTO user_searches 
-      (user_id, brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [user_id, brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions]);
-
-      res.status(200).send('Search saved successfully');
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal server error');
-    }
-  });
-
-
-
-
-
-  router.get('/search-history', isUser, async (req, res) => {
-    const user_id = req.session.userId;
-
-    try {
-      const [rows] = await db.query(`
-      SELECT user_id, brand, model, processor, ram, storage, location, screen_size, years, quantity, total_carbon_emissions
-      FROM user_searches
-      WHERE user_id = ?
-    `, [user_id]);
-
-      res.json(rows);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal server error');
-    }
-  });
-
-
-
-
-
-
-
-
-
-
-  router.post('/download', async (req, res) => {
-    const { tableData, pieChartData, barChartData } = req.body;
-
-    // Convert the charts to images
-    const pieChartImage = await chartToImage(pieChartData);
-    const barChartImage = await chartToImage(barChartData);
-
-    // Create the PDF document
-    const docDefinition = {
-      content: [
-        { text: 'Carbon Emission Report', style: 'header' },
-        { image: pieChartImage },
-        { image: barChartImage },
-        { table: { body: tableData }, layout: 'lightHorizontalLines' },
-      ],
+    const emissions = {
+      transportation: +(product.transportation * qty).toFixed(2),
+      packaging: +(product.packaging * qty).toFixed(2),
+      display: +(product.display * qty).toFixed(2),
+      soc: +(product.soc * qty).toFixed(2),
+      battery: +(product.battery * qty).toFixed(2),
+      power_supply_unit: +(product.power_supply_unit * qty).toFixed(2),
+      optical_drive: +(product.optical_drive * qty).toFixed(2),
+      storage_drive: +(product.storage_drive * qty).toFixed(2),
+      chassis: +(product.chassis * qty).toFixed(2),
+      end_of_life: +(product.end_of_life * qty * yrs).toFixed(2),
+      device_usage: +(product.device_usage * qty * yrs * factor).toFixed(2),
+      brand,
+      model,
     };
 
-    const pdfDoc = pdfMake.createPdf(docDefinition);
-    pdfDoc.getBase64((base64String) => {
-      res.writeHead(200, {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment;filename=report.pdf',
-      });
-      const download = Buffer.from(base64String, 'base64');
-      res.end(download);
-    });
+    res.json(emissions);
   });
 
-  async function chartToImage(chartData) {
-    const canvas = createCanvas(400, 400);
-    const ctx = canvas.getContext('2d');
-    new Chart(ctx, chartData);  // Assuming chartData includes the type, data, and options
-    return canvas.toDataURL().split(';base64,')[1];
-  }
+  router.post('/save-search', ensureAccessible, (req, res) => {
+    const { brand, model, location, years, quantity, total_carbon_emissions } = req.body;
 
-  module.exports = router;
+    if (res.locals.user.id) {
+      store.users.addSearchHistory({
+        user_id: res.locals.user.id,
+        brand, model, location, years, quantity, total_carbon_emissions,
+      });
+    } else {
+      if (!req.session.guestHistory) req.session.guestHistory = [];
+      req.session.guestHistory.push({ brand, model, location, years, quantity, total_carbon_emissions });
+    }
 
+    res.status(200).send('Search saved');
+  });
 
-
-
+  router.get('/search-history', requireUser, (req, res) => {
+    const history = store.users.getHistoryForUser(req.session.userId);
+    res.json(history);
+  });
 
   return router;
 };
-

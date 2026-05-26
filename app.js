@@ -1,14 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const db = require('./db');
+const store = require('./store');
 const path = require('path');
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/dist'));
-app.use(express.static(__dirname + '/public'));
-
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.set('view engine', 'ejs');
@@ -21,17 +20,15 @@ app.use(
   })
 );
 
-const authRoutes = require('./routes/auth')(db, session);
-const adminRoutes = require('./routes/admin')(db);
-const vendorRoutes = require('./routes/vendor')(db);
-const userRoutes = require('./routes/user')(db);
-const apiRoutes = require('./routes/api')(db);
+const authRoutes = require('./routes/auth')(store);
+const adminRoutes = require('./routes/admin')(store);
+const vendorRoutes = require('./routes/vendor')(store);
+const userRoutes = require('./routes/user')(store);
 
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/vendor', vendorRoutes);
 app.use('/user', userRoutes);
-app.use('/api', apiRoutes);
 
 app.get('/', (req, res) => {
   res.render('welcome');

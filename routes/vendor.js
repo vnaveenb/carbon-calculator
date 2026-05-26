@@ -1,197 +1,117 @@
-module.exports = function (db) {
+module.exports = function (store) {
+  const express = require('express');
+  const router = express.Router();
+  const multer = require('multer');
+  const upload = multer({ dest: 'uploads/' });
+  const XLSX = require('xlsx');
+  const path = require('path');
 
+  function isVendor(req, res, next) {
+    if (!req.session.userId) return res.redirect('/auth/login');
+    const user = store.users.findById(req.session.userId);
+    if (!user || user.role !== 'vendor') return res.redirect('/auth/login');
+    res.locals.user = { id: user.id, username: user.username, email: user.email, role: user.role };
+    next();
+  }
 
-const express = require('express');
-const router = express.Router();
+  router.get('/welcome', isVendor, (req, res) => {
+    res.render('vendorWelcome', { user: res.locals.user });
+  });
 
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-const XLSX = require('xlsx');
+  router.get('/action', isVendor, (req, res) => {
+    res.render('vendorAction', { user: res.locals.user });
+  });
 
-const path = require('path');
+  router.post('/upload-xls', isVendor, upload.single('xlsFile'), (req, res) => {
+    try {
+      if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
 
+      const workbook = XLSX.readFile(req.file.path);
+      const sheetName = workbook.SheetNames[0];
+      const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-router.post('/upload-xls', upload.single('xlsFile'), async (req, res) => {
-  try {
-    const workbook = XLSX.readFile(req.file.path);
-    const sheet_name_list = workbook.SheetNames;
-    const results = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
-    if (results.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No data found in the uploaded file. Please upload a file with data.',
-      });
+      if (rows.length === 0) {
+        return res.status(400).json({ success: false, message: 'No data found in uploaded file' });
+      }
+
+      for (const row of rows) {
+        const total_co2 = parseFloat(row.total_co2) || 0;
+        store.products.addProduct({
+          brand: row.brand || '',
+          model: row.model || '',
+          total_co2,
+          chassis: parseFloat(row.chassis) || 0,
+          storage_drive: parseFloat(row.storage_drive) || 0,
+          power_supply_unit: parseFloat(row.power_supply_unit) || 0,
+          battery: parseFloat(row.battery) || 0,
+          soc: parseFloat(row.soc) || 0,
+          display: parseFloat(row.display) || 0,
+          packaging: parseFloat(row.packaging) || 0,
+          optical_drive: parseFloat(row.optical_drive) || 0,
+          end_of_life: parseFloat(row.end_of_life) || 0,
+          transportation: parseFloat(row.transportation) || 0,
+          device_usage: parseFloat(row.device_usage) || 0,
+          source: 'vendor',
+        });
+      }
+
+      res.status(200).json({ success: true, message: `Uploaded ${rows.length} records` });
+    } catch (err) {
+      console.error('XLS upload error:', err);
+      res.status(500).json({ success: false, message: 'Upload failed' });
     }
-    console.log(results);
+  });
 
-    const vendorId = req.session.userId;
+  router.get('/test.xlsx', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'test.xlsx'));
+  });
 
-    const promises = results.map(async (row) => {
-     
+  router.get('/fetch-data', isVendor, (req, res) => {
+    const products = store.products.getAllProducts().filter(p => p.source === 'vendor');
+    res.status(200).json(products);
+  });
 
-      const {
-        brand = null, 
-        model = null, 
-        processor = null, 
-        ram = null, 
-        storage = null, 
-        screen_size = null, 
-        date = null, 
-        total_co2 = null, 
-        transportation = null, 
-        packaging = null, 
-        display = null, 
-        soc = null, 
-        battery = null, 
-        power_supply_unit = null, 
-        optical_drive = null, 
-        storage_drive = null, 
-        chassis = null, 
-        end_of_life = null, 
-        device_usage = null
-    } = row;
+  router.post('/submit-emissions-data', isVendor, (req, res) => {
+    const {
+      brand = '', model = '', total_co2 = 0,
+      transportation = 0, packaging = 0, display = 0, soc = 0,
+      battery = 0, power_supply_unit = 0, optical_drive = 0,
+      storage_drive = 0, chassis = 0, end_of_life = 0, device_usage = 0,
+    } = req.body;
 
-      let jsDate = XLSX.SSF.parse_date_code(date); 
-      let mysqlDate = `${jsDate.y}-${jsDate.m < 10 ? '0' + jsDate.m : jsDate.m}-${jsDate.d < 10 ? '0' + jsDate.d : jsDate.d}`;
+    const existing = store.products.getProductData(brand, model);
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'A record with the same brand and model already exists' });
+    }
 
-      await db.execute(
-        'INSERT INTO ProductEmissions (brand, model, processor, ram, storage, screen_size, date, total_co2, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage, vendor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-          brand, model, processor, ram, storage, screen_size, mysqlDate, total_co2, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, end_of_life, device_usage, vendorId
-        ]
-      );
+    store.products.addProduct({
+      brand, model,
+      total_co2: parseFloat(total_co2) || 0,
+      chassis: parseFloat(chassis) || 0,
+      storage_drive: parseFloat(storage_drive) || 0,
+      power_supply_unit: parseFloat(power_supply_unit) || 0,
+      battery: parseFloat(battery) || 0,
+      soc: parseFloat(soc) || 0,
+      display: parseFloat(display) || 0,
+      packaging: parseFloat(packaging) || 0,
+      optical_drive: parseFloat(optical_drive) || 0,
+      end_of_life: parseFloat(end_of_life) || 0,
+      transportation: parseFloat(transportation) || 0,
+      device_usage: parseFloat(device_usage) || 0,
+      source: 'vendor',
     });
 
-    await Promise.all(promises);
-
     res.status(200).json({ success: true, message: 'Emissions data submitted successfully' });
-  } catch (err) {
-    console.error('Error submitting emissions data:', err);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-});
-
-
-
-
-
-router.get('/test.xlsx', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'test.xlsx'));
-});
-
-
-router.get('/fetch-data', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM ProductEmissions WHERE vendor_id = ?', [req.session.userId]);
-    res.status(200).json(rows);
-  } catch (err) {
-    console.error('Error fetching data:', err);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-});
-
-
-
- router.get('/welcome', isVendor, (req, res) => {
-    res.render('vendorWelcome');
-  });
-  
-  router.get('/action', isVendor, (req, res) => {
-    res.render('vendorAction');
   });
 
-  
-  router.post('/submit-emissions-data', async (req, res) => {
-    const vendorId = req.session.userId;
-    const {
-      brand = null, 
-      model = null, 
-      processor = null, 
-      ram = null, 
-      storage = null, 
-      screen_size = null, 
-      date = null, 
-      total_co2 = null, 
-      transportation = null, 
-      packaging = null, 
-      display = null, 
-      soc = null, 
-      battery = null, 
-      power_supply_unit = null, 
-      optical_drive = null, 
-      storage_drive = null, 
-      chassis = null, 
-      end_of_life = null, 
-      device_usage = null
-  } = req.body;
+  router.post('/update', isVendor, (req, res) => {
+    const { brand, model, ...rest } = req.body;
+    const product = store.products.getProductData(brand, model);
+    if (!product) return res.status(404).json({ success: false, message: 'Record not found' });
 
-    try {
-      // Check if a record with the same brand, model, processor, ram, and storage already exists
-      const [rows] = await db.execute(
-        'SELECT * FROM ProductEmissions WHERE brand = ? AND model = ? AND processor = ? AND ram = ? AND storage = ?',
-        [brand, model, processor, ram, storage]
-      );
+    store.products.addProduct({ brand, model, ...rest });
+    res.status(200).json({ success: true, message: 'Emissions data updated successfully' });
+  });
 
-      if (rows.length > 0) {
-        // If a record exists, return an error message
-        res.status(400).json({ success: false, message: 'A record with the same brand, model, processor, ram, and storage already exists' });
-      } else {
-        // total_co2=null;
-        // If no record exists, insert the new record
-        const [result] = await db.execute(
-          'INSERT INTO ProductEmissions (vendor_id,brand,model,processor,ram,storage,screen_size,date,total_co2,transportation,packaging,display,soc,battery,power_supply_unit,optical_drive,storage_drive,chassis,end_of_life,device_usage) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-          [vendorId,brand,model,processor,ram,storage,screen_size,date,total_co2,transportation,packaging,display,soc,battery,power_supply_unit,optical_drive,storage_drive,chassis,end_of_life,device_usage]
-        );
-
-        res.status(200).json({ success: true, message: 'Emissions data submitted successfully' });
-      }
-    } catch (err) {
-      console.error('Error submitting emissions data:', err);
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
-    }
-});
-
-router.post('/update', async (req, res) => {
-  const {
-    id, brand, model, processor, ram, storage, screen_size, end_of_life, device_usage, total_co2, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis
-  } = req.body;
-
-  try {
-    // Update the record
-    const [result] = await db.execute(
-      'UPDATE ProductEmissions SET end_of_life = ?, device_usage = ?, transportation = ?, packaging = ?, display = ?, soc = ?, battery = ?, power_supply_unit = ?, optical_drive = ?, storage_drive = ?, chassis = ? WHERE brand = ? AND model = ? AND processor = ? AND ram = ? AND storage = ? AND screen_size = ?',
-      [end_of_life, device_usage, transportation, packaging, display, soc, battery, power_supply_unit, optical_drive, storage_drive, chassis, brand, model, processor, ram, storage, screen_size]
-    );
-
-    if (result.affectedRows === 0) {
-      // If no record was updated, return an error message
-      res.status(400).json({ success: false, message: 'No record found with the provided id' });
-    } else {
-      res.status(200).json({ success: true, message: 'Emissions data updated successfully' });
-    }
-  } catch (err) {
-    console.error('Error updating emissions data:', err);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-});
-
-
-
-async function isVendor(req, res, next) {
-  try {
-    const [rows] = await db.query('SELECT username, email, role FROM users_registration WHERE id = ?', [req.session.userId]);
-    if (rows.length > 0 && rows[0].role === 'vendor') {
-      res.locals.user = rows[0];
-      next();
-    } else {
-      res.redirect('/auth/login');
-    }
-  } catch (error) {
-    console.error(error);
-    res.redirect('/auth/login');
-  }
-}
-
-
-      return router;
-    };
+  return router;
+};

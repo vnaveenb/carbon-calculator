@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"require\\('./store'\\)\")",
+      "Bash(node app.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4000/)",
+      "Bash(curl -s -o /dev/null -w \"/ => %{http_code}\\\\n\" http://localhost:4000/)",
+      "Bash(curl -s -o /dev/null -w \"/auth/login => %{http_code}\\\\n\" http://localhost:4000/auth/login)",
+      "Bash(curl -s -o /dev/null -w \"/register => %{http_code}\\\\n\" http://localhost:4000/register)",
+      "Bash(curl -s -o /dev/null -w \"/user/actions => %{http_code}\\\\n\" http://localhost:4000/user/actions)",
+      "Bash(curl -s -o /dev/null -w \"/user/unique-brands => %{http_code}\\\\n\" http://localhost:4000/user/unique-brands)"
+    ]
+  }
+}

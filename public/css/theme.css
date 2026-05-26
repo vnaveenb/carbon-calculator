@@ -1,0 +1,302 @@
+:root {
+  --clr-primary: #2d6a4f;
+  --clr-secondary: #40916c;
+  --clr-accent: #d4a017;
+  --clr-bg-light: #f0f7f4;
+  --clr-dark: #1b4332;
+  --clr-white: #ffffff;
+  --clr-muted: #6c757d;
+  --radius: 0.5rem;
+  --shadow: 0 2px 12px rgba(27,67,50,0.10);
+}
+
+/* ── Base ── */
+body {
+  background-color: var(--clr-bg-light);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #212529;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Navbar ── */
+.navbar-eco {
+  background-color: var(--clr-primary) !important;
+  box-shadow: 0 2px 8px rgba(27,67,50,0.18);
+}
+.navbar-eco .navbar-brand,
+.navbar-eco .nav-link {
+  color: var(--clr-white) !important;
+}
+.navbar-eco .nav-link:hover {
+  color: rgba(255,255,255,0.8) !important;
+}
+.navbar-eco .navbar-brand:hover {
+  color: rgba(255,255,255,0.85) !important;
+}
+.navbar-eco .navbar-toggler {
+  border-color: rgba(255,255,255,0.4);
+}
+.navbar-eco .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255%2c255%2c255%2c0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* ── Buttons ── */
+.btn-eco {
+  background-color: var(--clr-primary);
+  border-color: var(--clr-primary);
+  color: var(--clr-white);
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.btn-eco:hover, .btn-eco:focus {
+  background-color: var(--clr-dark);
+  border-color: var(--clr-dark);
+  color: var(--clr-white);
+}
+.btn-eco:active {
+  background-color: var(--clr-dark);
+  border-color: var(--clr-dark);
+  color: var(--clr-white);
+}
+
+.btn-eco-outline {
+  background-color: transparent;
+  border: 2px solid var(--clr-white);
+  color: var(--clr-white);
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+}
+.btn-eco-outline:hover, .btn-eco-outline:focus {
+  background-color: var(--clr-white);
+  color: var(--clr-primary);
+}
+
+.btn-eco-accent {
+  background-color: var(--clr-accent);
+  border-color: var(--clr-accent);
+  color: #1a1a1a;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+.btn-eco-accent:hover {
+  background-color: #b8860f;
+  border-color: #b8860f;
+  color: #1a1a1a;
+}
+
+/* ── Cards ── */
+.card-eco {
+  background-color: var(--clr-white);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.card-eco .card-header-eco {
+  background-color: var(--clr-primary);
+  color: var(--clr-white);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 1rem 1.5rem;
+}
+.card-eco .card-header-eco h5,
+.card-eco .card-header-eco h4 {
+  margin: 0;
+  color: var(--clr-white);
+}
+
+/* ── Hero Section ── */
+.page-hero {
+  background: linear-gradient(135deg, var(--clr-dark) 0%, var(--clr-primary) 55%, var(--clr-secondary) 100%);
+  color: var(--clr-white);
+  padding: 5rem 1.5rem;
+  text-align: center;
+}
+.page-hero h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.page-hero p.lead {
+  font-size: 1.2rem;
+  opacity: 0.92;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+/* ── Feature Cards ── */
+.feature-card {
+  background: var(--clr-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(27,67,50,0.16);
+}
+.feature-card .feature-icon {
+  font-size: 2.5rem;
+  color: var(--clr-primary);
+  margin-bottom: 1rem;
+}
+.feature-card h5 {
+  color: var(--clr-dark);
+  font-weight: 600;
+}
+
+/* ── Footer ── */
+footer.footer-eco {
+  background-color: var(--clr-dark);
+  color: rgba(255,255,255,0.85);
+  padding: 2rem 0 1.5rem;
+  margin-top: auto;
+}
+footer.footer-eco a {
+  color: rgba(255,255,255,0.7);
+}
+footer.footer-eco a:hover {
+  color: var(--clr-white);
+}
+
+/* ── Auth forms ── */
+.auth-wrapper {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--clr-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.auth-card .auth-header {
+  background: linear-gradient(135deg, var(--clr-dark), var(--clr-primary));
+  color: var(--clr-white);
+  padding: 1.75rem 2rem 1.5rem;
+  text-align: center;
+}
+.auth-card .auth-header h4 {
+  margin: 0.5rem 0 0;
+  font-weight: 700;
+}
+.auth-card .auth-body {
+  padding: 1.75rem 2rem 2rem;
+}
+
+/* ── Dashboard page header ── */
+.page-header-bar {
+  background: linear-gradient(90deg, var(--clr-primary), var(--clr-secondary));
+  color: var(--clr-white);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+}
+.page-header-bar h2 {
+  margin: 0;
+  font-weight: 700;
+  color: var(--clr-white);
+}
+.page-header-bar p {
+  margin: 0.25rem 0 0;
+  opacity: 0.88;
+}
+
+/* ── User dropdown circle avatar ── */
+.user-avatar-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.5);
+  color: var(--clr-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.user-avatar-btn:hover {
+  background-color: rgba(255,255,255,0.3);
+}
+
+/* ── Responsive chart containers ── */
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.bar-chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.chart-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+/* ── Product form cards ── */
+.product-forms-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.form-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--clr-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+/* ── Misc ── */
+.text-eco {
+  color: var(--clr-primary) !important;
+}
+.bg-eco {
+  background-color: var(--clr-primary) !important;
+}
+.badge-eco {
+  background-color: var(--clr-primary);
+  color: var(--clr-white);
+  padding: 0.3em 0.7em;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.section-title {
+  color: var(--clr-dark);
+  font-weight: 700;
+  border-left: 4px solid var(--clr-primary);
+  padding-left: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.table-container {
+  background: var(--clr-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+}
