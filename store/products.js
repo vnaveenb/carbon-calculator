@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const CSV_FILE = path.join(__dirname, '..', '1.csv');
-const MD_FILE = path.join(__dirname, '..', '1.md');
+const CSV_FILE = path.join(__dirname, '..', 'data', 'laptop-footprints.csv');
+const MD_FILE = path.join(__dirname, '..', 'data', 'laptop-footprints.md');
 
 let products = [];
 
@@ -33,7 +33,7 @@ function parseCSVRow(line) {
 
 function loadCSV() {
   if (!fs.existsSync(CSV_FILE)) {
-    console.warn('1.csv not found, skipping CSV load');
+    console.warn('laptop-footprints.csv not found, skipping CSV load');
     return [];
   }
   const text = fs.readFileSync(CSV_FILE, 'utf-8');
@@ -70,7 +70,7 @@ function loadCSV() {
 
 function loadMD() {
   if (!fs.existsSync(MD_FILE)) {
-    console.warn('1.md not found, skipping MD load');
+    console.warn('laptop-footprints.md not found, skipping MD load');
     return [];
   }
   const lines = fs.readFileSync(MD_FILE, 'utf-8').split(/\r?\n/);

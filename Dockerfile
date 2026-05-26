@@ -1,15 +1,4 @@
-# ── Stage 1: build webpack bundle ──────────────────────────────────────────────
-FROM node:18-alpine AS builder
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
-# ── Stage 2: production image ───────────────────────────────────────────────────
+# ── Production image ────────────────────────────────────────────────────────────
 FROM node:18-alpine AS production
 
 WORKDIR /app
@@ -17,13 +6,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Copy app source and built assets
-COPY --from=builder /app/dist ./dist
-COPY app.js db.js webpack.config.js ./
+# Copy app source
+COPY app.js db.js ./
 COPY routes/ ./routes/
 COPY views/ ./views/
 COPY public/ ./public/
 COPY store/ ./store/
+COPY data/ ./data/
 
 # Multer upload target must exist
 RUN mkdir -p uploads

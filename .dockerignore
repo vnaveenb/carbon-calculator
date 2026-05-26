@@ -3,9 +3,7 @@ dist
 .git
 .gitignore
 .claude
-*.md
-1.csv
-1.md
+README.md
 uploads/*
 .env
 .env.*
