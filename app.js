@@ -14,7 +14,7 @@ app.set('view engine', 'ejs');
 
 app.use(
   session({
-    secret: 'a1b55b19f1c68859bad585e655271b002614c013d2e3b80383060bcd807a1e94d2dca2d71b87e693ed06f788d0633da41e69efcd4e1f8207fbc745f96f128327',
+    secret: process.env.SESSION_SECRET || (() => { throw new Error('SESSION_SECRET env var is required'); })(),
     resave: false,
     saveUninitialized: true,
   })

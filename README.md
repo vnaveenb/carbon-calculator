@@ -7,6 +7,8 @@
 ![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)
 ![MySQL](https://img.shields.io/badge/DB-MySQL-4479A1?logo=mysql&logoColor=white)
 ![Views](https://img.shields.io/badge/Templating-EJS-B4CA65)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)
+![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=github-actions&logoColor=white)
 
 ---
 
@@ -24,13 +26,15 @@ The result is a practical workflow for turning raw product data into understanda
 
 ## Quick Start
 
-### 1. Install dependencies
+### Option A — Local (Node.js)
+
+#### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Configure database connection
+#### 2. Configure database connection
 
 Update credentials/host in `db.js` for your MySQL server.
 
@@ -39,21 +43,76 @@ The app currently expects:
 - SSL CA file at `public/DigiCertGlobalRootCA.crt.pem`
 - MySQL database containing required tables (see Data Model section)
 
-### 3. Build frontend bundle (optional but recommended)
+#### 3. Build frontend bundle (optional but recommended)
 
 ```bash
 npm run build
 ```
 
-### 4. Start the application
+#### 4. Start the application
 
 ```bash
 npm start
 ```
 
-By default, the app runs on:
+By default, the app runs on `http://localhost:4000`.
 
-- `http://localhost:4000`
+---
+
+### Option B — Docker
+
+#### 1. Build the image
+
+```bash
+docker build -t carbon-calculator .
+```
+
+#### 2. Run the container
+
+```bash
+docker run -p 4000:4000 \
+  -e SESSION_SECRET=your_secret_here \
+  -e DB_HOST=your_db_host \
+  -e DB_USER=your_db_user \
+  -e DB_PASSWORD=your_db_password \
+  -e DB_NAME=your_db_name \
+  carbon-calculator
+```
+
+The app will be available at `http://localhost:4000`.
+
+> **Note:** The container does not include MySQL. Point `DB_HOST` at an external MySQL instance or run one via Docker Compose.
+
+#### Docker Compose (app + MySQL)
+
+```yaml
+version: "3.9"
+services:
+  app:
+    image: carbon-calculator
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      SESSION_SECRET: change_me
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: rootpass
+      DB_NAME: carbon
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: carbon
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+```
 
 ---
 
@@ -249,18 +308,24 @@ Key columns:
 
 ```text
 carbon-calculator/
-├── app.js                  # Express bootstrap and route mounting
-├── db.js                   # MySQL pool and SSL configuration
+├── app.js                        # Express bootstrap and route mounting
+├── db.js                         # MySQL pool and SSL configuration
 ├── routes/
-│   ├── auth.js             # Registration, login, verification, redirects
-│   ├── admin.js            # Admin views and management APIs
-│   ├── vendor.js           # Vendor upload/data routes
-│   ├── user.js             # User calculator and history routes
-│   └── api.js              # Generic JSON endpoints
-├── views/                  # EJS templates per role and shared layout
-├── public/                 # Static assets and client-side scripts
-├── uploads/                # Multer upload target for spreadsheets
-├── webpack.config.js       # Bundle config
+│   ├── auth.js                   # Registration, login, verification, redirects
+│   ├── admin.js                  # Admin views and management APIs
+│   ├── vendor.js                 # Vendor upload/data routes
+│   ├── user.js                   # User calculator and history routes
+│   └── api.js                    # Generic JSON endpoints
+├── views/                        # EJS templates per role and shared layout
+├── public/                       # Static assets and client-side scripts
+├── store/                        # In-memory data store modules
+├── uploads/                      # Multer upload target for spreadsheets
+├── Dockerfile                    # Multi-stage production image
+├── .dockerignore
+├── .github/
+│   └── workflows/
+│       └── docker.yml            # CI pipeline: build + push to ghcr.io
+├── webpack.config.js             # Bundle config
 └── package.json
 ```
 
@@ -278,6 +343,31 @@ The current codebase is functional for development/demo usage, but before produc
 
 ---
 
+## CI / CD
+
+The repository ships a GitHub Actions workflow at [.github/workflows/docker.yml](.github/workflows/docker.yml).
+
+**What it does on every push to `main` or `master`:**
+
+1. Checks out the code
+2. Logs in to the GitHub Container Registry (`ghcr.io`) using the built-in `GITHUB_TOKEN` — no extra secrets required
+3. Builds the Docker image using the multi-stage `Dockerfile`
+4. Pushes two tags:
+   - `ghcr.io/<owner>/<repo>:latest`
+   - `ghcr.io/<owner>/<repo>:sha-<short-git-sha>`
+
+On pull requests the image is **built but not pushed**, so CI still validates the `Dockerfile` for every PR.
+
+Layer caching via GitHub Actions cache (`cache-from/cache-to: type=gha`) keeps subsequent builds fast.
+
+### Pull the published image
+
+```bash
+docker pull ghcr.io/<your-github-username>/carbon-calculator:latest
+```
+
+---
+
 ## Run Commands
 
 ```bash
@@ -289,6 +379,12 @@ npm run build
 
 # Start app
 npm start
+
+# Docker build
+docker build -t carbon-calculator .
+
+# Docker run
+docker run -p 4000:4000 carbon-calculator
 ```
 
 ---
